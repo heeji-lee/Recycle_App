@@ -12,12 +12,13 @@
 
     <ImageView
         android:id="@+id/logoImage"
-        android:layout_width="176dp"
-        android:layout_height="52dp"
+        android:layout_width="246dp"
+        android:layout_height="82dp"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="82dp"
+        android:layout_marginTop="110dp"
         android:scaleType="fitXY"
-        android:src="@drawable/ehopickuplogo" />
+        android:layout_marginLeft="60dp"
+        android:src="@drawable/mainlogo" />
 
     <TextView
         android:id="@+id/welcomeText"
@@ -25,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/logoImage"
         android:layout_marginTop="50dp"
-        android:text="환영합니다.\n리사이클링입니다 :)"
+        android:text="환영합니다.\n에코픽업입니다 :)"
         android:textColor="@android:color/black"
         android:textSize="24sp"
         android:layout_marginLeft="25dp"/>

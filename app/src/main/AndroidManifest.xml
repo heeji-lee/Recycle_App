@@ -19,6 +19,9 @@
             android:name=".ReservationDetailActivity"
             android:exported="false" />
         <activity
+            android:name=".DateSelectActivity"
+            android:exported="true" />
+        <activity
             android:name=".ProductActivity"
             android:exported="true" />
         <activity

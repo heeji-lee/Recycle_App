@@ -166,10 +166,19 @@ class ProductActivity : AppCompatActivity() {
             imageUri?.let { it1 -> processImage(it1) }
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.product)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        // 툴바와 바텀 네비게이션 설정
+        setupToolbar()
+        setupBottomNavigation()
+
+        // 버튼에 리스너 추가
+        val washingMachineButton: ImageButton = findViewById(R.id.btn_washing_machine)
+        washingMachineButton.setOnClickListener {
+            Toast.makeText(this, "세탁기 선택", Toast.LENGTH_SHORT).show()
+        }
+
+        val cancelButton: Button = findViewById(R.id.btn_cancel)
+        cancelButton.setOnClickListener {
+            Toast.makeText(this, "취소", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -278,3 +287,4 @@ class ProductActivity : AppCompatActivity() {
         return "$formattedValue%"
     }
 }
+

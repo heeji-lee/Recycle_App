@@ -25,6 +25,15 @@
         android:inputType="textEmailAddress"
         android:layout_marginBottom="16dp"/>
 
+    <!-- 이름 입력 -->
+    <EditText
+        android:id="@+id/editTextMname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="이름"
+        android:inputType="text"
+        android:layout_marginBottom="24dp"/>
+
     <!-- 비밀번호 입력 -->
     <EditText
         android:id="@+id/editTextPassword"
@@ -41,6 +50,23 @@
         android:layout_height="wrap_content"
         android:hint="비밀번호 확인"
         android:inputType="textPassword"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- 주소 입력 -->
+    <EditText
+        android:id="@+id/editTextAdress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="주소"
+        android:inputType="text"
+        android:layout_marginBottom="24dp"/>
+    <!-- 전화번호 확인 입력 -->
+    <EditText
+        android:id="@+id/editTextPhone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="전화번호"
+        android:inputType="text"
         android:layout_marginBottom="24dp"/>
 
     <!-- 회원 가입 버튼 -->

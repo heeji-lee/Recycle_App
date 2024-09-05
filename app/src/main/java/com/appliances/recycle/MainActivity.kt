@@ -1,6 +1,10 @@
 package com.appliances.recycle
 
+import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import android.widget.Button
+import android.widget.Toast
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -55,8 +59,11 @@ class MainActivity : AppCompatActivity() {
             // 비밀번호 찾기 로직 구현
         }
 
-        findViewById<TextView>(R.id.register).setOnClickListener {
-            // 회원가입 로직 구현
+        // 회원가입 버튼 클릭 리스너
+        findViewById<Button>(R.id.btnRegister).setOnClickListener {
+            // 회원가입 화면으로 이동하는 예시 Intent
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
         }
     }
 }

@@ -16,7 +16,7 @@
     <item
         android:id="@+id/navigation_alert"
         android:icon="@drawable/ic_alert_black_48"
-        android:title="알림" />
+        android:title="공지사항" />
     <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_profile_black_48"

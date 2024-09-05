@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@android:color/white"
     android:padding="16dp">
 
     <!-- 결제 방법 섹션 -->
@@ -35,10 +34,10 @@
             android:layout_height="wrap_content"
             android:text="신용-체크카드"
             android:textSize="16sp"
-            android:backgroundTint="@color/white"
+            android:background="@drawable/rounded_button_with_border"
             android:padding="16dp"
             android:gravity="center"
-            android:textColor="@color/black"
+            android:textColor="@android:color/white"
             android:layout_marginBottom="8dp"/>
 
         <!-- 두 번째 행: 계좌이체, 가상계좌, 휴대폰 -->
@@ -56,12 +55,11 @@
                 android:layout_weight="1"
                 android:text="계좌이체"
                 android:textSize="16sp"
-                android:backgroundTint="@color/white"
+                android:background="@drawable/rounded_button_with_border"
                 android:padding="16dp"
                 android:gravity="center"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:layout_marginEnd="4dp"/>
-
 
             <Button
                 android:id="@+id/btnVirtualAccount"
@@ -70,10 +68,10 @@
                 android:layout_weight="1"
                 android:text="가상계좌"
                 android:textSize="16sp"
-                android:backgroundTint="@color/white"
+                android:background="@drawable/rounded_button_with_border"
                 android:padding="16dp"
                 android:gravity="center"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="2dp"/>
 
@@ -84,10 +82,10 @@
                 android:layout_weight="1"
                 android:text="휴대폰"
                 android:textSize="16sp"
-                android:backgroundTint="@color/white"
+                android:background="@drawable/rounded_button_with_border"
                 android:padding="16dp"
                 android:gravity="center"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:layout_marginStart="4dp"/>
         </LinearLayout>
 
@@ -138,7 +136,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="150,000원 결제"
-        android:backgroundTint="@drawable/rounded_button_with_border"
+        android:background="@drawable/rounded_button_with_border"
         android:textColor="@android:color/white"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="60dp"
@@ -152,7 +150,7 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:weightSum="5"
-        android:background="@color/white">
+        android:background="@android:color/white">
 
         <!-- 홈 -->
         <ImageView

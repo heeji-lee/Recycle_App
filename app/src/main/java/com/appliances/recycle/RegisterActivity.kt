@@ -7,7 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.appliances.recycle.databinding.ActivityRegisterBinding
 import com.appliances.recycle.repository.RegisterRepository
-import com.appliances.recycle.network.RetrofitClient
+import com.appliances.recycle.network.MyApplication
 import com.appliances.recycle.viewModel.RegisterViewModel
 import com.appliances.recycle.viewModelFactory.RegisterViewModelFactory
 
@@ -17,7 +17,7 @@ class RegisterActivity : AppCompatActivity() {
 
     // RegisterViewModel을 ViewModelProvider로 초기화
     private val registerViewModel: RegisterViewModel by viewModels {
-        RegisterViewModelFactory(RegisterRepository(RetrofitClient.instance))
+        RegisterViewModelFactory(RegisterRepository(MyApplication.instance))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

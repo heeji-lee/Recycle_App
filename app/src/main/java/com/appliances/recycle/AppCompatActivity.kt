@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.appliances.recycle.SerializedName.ImageClassificationResponse
-import com.appliances.recycle.network.ImageUploadApi
+import com.appliances.recycle.network.INetworkService
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -70,7 +70,7 @@ class AppCompatActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        val api = retrofit.create(ImageUploadApi::class.java)
+        val api = retrofit.create(INetworkService::class.java)
 
         // Bitmap을 파일로 변환
         val file = File(cacheDir, "image.jpg")

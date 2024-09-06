@@ -8,6 +8,8 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
@@ -25,8 +27,8 @@ import com.appliances.recycle.dto.PredictionResult
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.FutureTarget
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.sylovestp.firebasetest.testspringrestapp.retrofit.INetworkService
-import com.sylovestp.firebasetest.testspringrestapp.retrofit.MyApplication
+import com.sylovestp.firebasetest.testspringrestapp.retrofitN.INetworkService
+import com.sylovestp.firebasetest.testspringrestapp.retrofitN.MyApplication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -147,6 +149,10 @@ class ProductActivity : AppCompatActivity() {
 //                .load(imageUri) // 이미지 URL 또는 로컬 리소스
 //                .apply(RequestOptions().circleCrop())
 //                .into(imageView)
+            // 이미지 로드
+            Glide.with(this)
+                .load(imageUri)
+                .into(imageView)
         }
     }
 
@@ -167,8 +173,8 @@ class ProductActivity : AppCompatActivity() {
         }
 
         // 툴바와 바텀 네비게이션 설정
-        setupToolbar()
-        setupBottomNavigation()
+//        setupToolbar()
+//        setupBottomNavigation()
 
         // 버튼에 리스너 추가
         val washingMachineButton: ImageButton = findViewById(R.id.btn_washing_machine)
@@ -276,15 +282,9 @@ class ProductActivity : AppCompatActivity() {
         return byteArrayOutputStream.toByteArray()
     }
 
-    fun formatToPercentage(value: Double): String {
-        // 값을 100으로 곱해서 퍼센트로 변환
+    private fun formatToPercentage(value: Double): String {
         val percentageValue = value * 100
-
-        // 소수점 둘째 자리까지 포맷
-        val formattedValue = String.format("%.2f", percentageValue)
-
-        // 퍼센트 기호 추가
-        return "$formattedValue%"
+        return String.format("%.2f", percentageValue) + "%"
     }
 }
 

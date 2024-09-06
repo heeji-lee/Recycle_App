@@ -11,7 +11,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class NoticeListActivity : BaseActivity() {
+class NoticeListActivity : BaseActivity() { // BaseActivity를 상속
 
     private lateinit var noticeAdapter: NoticeAdapter
     private lateinit var recyclerView: RecyclerView
@@ -22,9 +22,9 @@ class NoticeListActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 레이아웃을 설정한 후 setupToolbar 호출
         setContentView(R.layout.activity_notice_list)
-        setupToolbar() // BaseActivity의 메서드 호출
+        setupToolbar()
+        setupBottomNavigation()
 
         // RecyclerView 초기화
         recyclerView = findViewById(R.id.recyclerView)

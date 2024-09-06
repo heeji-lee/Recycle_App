@@ -2,7 +2,7 @@ package com.appliances.recycle
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.appliances.recycle.notice.NoticeListActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -12,38 +12,44 @@ open class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
     }
 
-    // 공통 툴바 설정 메서드
+    // 툴바 설정 메서드
     protected fun setupToolbar() {
-        val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
+        val toolbar: Toolbar? = findViewById(R.id.toolbar)
 
-        // 뒤로가기 버튼 클릭 이벤트
-        toolbar.setNavigationOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+        if (toolbar != null) {
+            setSupportActionBar(toolbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayShowTitleEnabled(false)
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressedDispatcher.onBackPressed()
+            }
+        } else {
+            // 로그 출력 또는 툴바가 없다는 것을 처리할 수 있습니다.
         }
     }
 
-    // 공통 BottomNavigationView 설정 메서드
+    // BottomNavigationView 설정 메서드
     protected fun setupBottomNavigation() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
 
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+        bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home -> {
-                    // 홈으로 이동
                     val intent = Intent(this, MainPageActivity::class.java)
                     startActivity(intent)
                     true
                 }
+                R.id.navigation_pickup -> {
+                    val intent = Intent(this, ProductListActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
                 R.id.navigation_alert -> {
-                    // 공지사항으로 이동
                     val intent = Intent(this, NoticeListActivity::class.java)
                     startActivity(intent)
                     true
                 }
-                // 나머지 BottomNavigation 항목들도 여기에 추가 가능
                 else -> false
             }
         }

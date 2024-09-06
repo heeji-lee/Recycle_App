@@ -6,11 +6,11 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class ProductListActivity : AppCompatActivity() {
+class ProductListActivity : BaseActivity() {
 
     private lateinit var container: LinearLayout
 
@@ -20,6 +20,10 @@ class ProductListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_product_list)
+
+        // 툴바와 하단 네비게이션 설정
+        setupToolbar()
+        setupBottomNavigation()
 
         container = findViewById(R.id.container)
 

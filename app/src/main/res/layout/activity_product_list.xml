@@ -1,30 +1,53 @@
-<ScrollView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/product_list"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#4285F4">
+    android:background="#FFFFFF">
 
-    <LinearLayout
-        android:id="@+id/container"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="#FFFFFF"
-        android:padding="10dp">
+        android:theme="@style/CustomToolbar"
+        app:navigationIcon="@drawable/ic_arrow_left" />
 
-        <TextView
-            android:id="@+id/header"
+    <ScrollView
+        android:id="@+id/product_list"
+        android:layout_below="@id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        android:layout_above="@id/bottom_navigation">
+
+        <LinearLayout
+            android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:background="#FFFFFF"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="@string/header_collect_status"
-            android:textColor="#000000"
-            android:textSize="18sp"
-            android:textStyle="bold" /> <!-- 태그 닫음 -->
+            android:padding="10dp">
 
+            <TextView
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="@string/header_collect_status"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </ScrollView>
 
-    </LinearLayout> <!-- LinearLayout 닫음 -->
-</ScrollView> <!-- ScrollView 닫음 -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:menu="@menu/bottom_navigation_menu"
+        app:labelVisibilityMode="labeled"
+        android:background="?android:attr/windowBackground" />
+</RelativeLayout>

@@ -3,7 +3,6 @@ package com.appliances.recycle
 import android.content.Intent
 import android.os.Bundle
 import com.appliances.recycle.notice.NoticeListActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import android.widget.Button
 
 class MainPageActivity : BaseActivity() {
@@ -26,24 +25,14 @@ class MainPageActivity : BaseActivity() {
             startActivity(intent)
         }
 
-        // BottomNavigationView 설정
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.navigation_home -> {
-                    // 홈 버튼 클릭 시 MainPageActivity로 이동
-                    val intent = Intent(this, MainPageActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-                R.id.navigation_alert -> {
-                    // 공지사항 클릭 시 NoticeListActivity로 이동
-                    val intent = Intent(this, NoticeListActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-                else -> false
-            }
+        // 신청현황 버튼 클릭 시 ProductListActivity로 이동
+        val statusButton: Button = findViewById(R.id.btnStatus)
+        statusButton.setOnClickListener {
+            val intent = Intent(this, ProductListActivity::class.java)
+            startActivity(intent)
         }
+
+        // BottomNavigationView 설정을 BaseActivity에서 처리
+        setupBottomNavigation()
     }
 }

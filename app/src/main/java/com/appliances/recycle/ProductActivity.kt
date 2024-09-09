@@ -2,14 +2,15 @@ package com.appliances.recycle
 
 import android.Manifest
 import android.content.Intent
+
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageButton
@@ -18,47 +19,44 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+
 import androidx.core.content.FileProvider
 import com.appliances.recycle.databinding.ActivityProductBinding
-import com.appliances.recycle.dto.PredictionResult
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.FutureTarget
 import com.google.android.material.bottomsheet.BottomSheetDialog
+
 import com.sylovestp.firebasetest.testspringrestapp.retrofitN.INetworkService
 import com.sylovestp.firebasetest.testspringrestapp.retrofitN.MyApplication
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
+
+class ProductActivity : BaseActivity() { // BaseActivity를 상속
 
 
 class ProductActivity : AppCompatActivity() {
 
     private lateinit var apiService: INetworkService
     private lateinit var networkService: INetworkService
+
     private lateinit var imageView: ImageView
     private lateinit var resultView: TextView
-    private var imageUri: Uri? = null  // Nullable URI
-
+    private var imageUri: Uri? = null
     private val cameraRequestCode = 1
     private val REQUEST_PERMISSION = 1001
     private lateinit var cameraImageUri: Uri
+
 
     // 권한 체크 및 요청
     private fun checkPermissions() {
@@ -226,8 +224,10 @@ class ProductActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_product)
         enableEdgeToEdge()
 
         val binding = ActivityProductBinding.inflate(layoutInflater)
@@ -244,9 +244,8 @@ class ProductActivity : AppCompatActivity() {
         // 예시: 네트워크 요청 수행
 
         binding.btnPhoto.setOnClickListener {
-            showImageSourceDialog() // 다이얼로그
-            Toast.makeText(this@ProductActivity, " ${imageUri}", Toast.LENGTH_SHORT).show()
-            imageUri?.let { it1 -> processImage(it1) }
+            showImageSourceDialog()
+            imageUri?.let { uri -> processImage(uri) }
         }
 
 
@@ -267,6 +266,7 @@ class ProductActivity : AppCompatActivity() {
     }
 
 
+
     // 이미지 처리 후, 서버로 전송하는 함수
     private fun processImage(uri: Uri) {
         if (uri == null) {
@@ -275,6 +275,7 @@ class ProductActivity : AppCompatActivity() {
         }
         GlobalScope.launch(Dispatchers.IO) {
             try {
+
                 // 1. JSON 데이터 생성
 //                val userRequestBody = createRequestBodyFromDTO(userDTO)
 
@@ -368,7 +369,6 @@ class ProductActivity : AppCompatActivity() {
                     }
                 })
             } catch (e: Exception) {
-                e.printStackTrace()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@ProductActivity, "이미지 분류 중 오류 발생", Toast.LENGTH_SHORT).show()
                 }
@@ -441,11 +441,9 @@ class ProductActivity : AppCompatActivity() {
     }
 }
 
-    // 이미지 타입 , 비트맵 -> 바이트 단위로 변경.
-    fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream) // 압축 품질을 80%로 설정
-        return byteArrayOutputStream.toByteArray()
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, cameraRequestCode)
     }
 
     private fun formatToPercentage(value: Double): String {
@@ -453,4 +451,3 @@ class ProductActivity : AppCompatActivity() {
         return String.format("%.2f", percentageValue) + "%"
     }
 }
-

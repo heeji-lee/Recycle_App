@@ -1,13 +1,14 @@
 package com.appliances.recycle
 
+import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
+import android.widget.Toast
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.appliances.recycle.network.RetrofitClient
+import com.appliances.recycle.network.MyApplication
 import com.appliances.recycle.repository.LoginRepository
 import com.appliances.recycle.viewModel.LoginViewModel
 import com.appliances.recycle.viewModelFactory.LoginViewModelFactory
@@ -21,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val repository = LoginRepository(RetrofitClient.instance)
+        val repository = LoginRepository(MyApplication.instance)
         val factory = LoginViewModelFactory(repository)
         loginViewModel = ViewModelProvider(this, factory)[LoginViewModel::class.java]
 
@@ -46,17 +47,20 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        // 아이디 찾기, 비밀번호 찾기, 회원가입 이벤트 처리
-        findViewById<TextView>(R.id.forgotId).setOnClickListener {
-            // 아이디 찾기 로직 구현
-        }
+//        // 아이디 찾기, 비밀번호 찾기, 회원가입 이벤트 처리
+//        findViewById<TextView>(R.id.forgotId).setOnClickListener {
+//            // 아이디 찾기 로직 구현
+//        }
 
-        findViewById<TextView>(R.id.forgotPassword).setOnClickListener {
-            // 비밀번호 찾기 로직 구현
-        }
+//        findViewById<TextView>(R.id.forgotPassword).setOnClickListener {
+//            // 비밀번호 찾기 로직 구현
+//        }
 
-        findViewById<TextView>(R.id.register).setOnClickListener {
-            // 회원가입 로직 구현
+        // 회원가입 버튼 클릭 리스너
+        findViewById<Button>(R.id.btnRegister).setOnClickListener {
+            // 회원가입 화면으로 이동하는 예시 Intent
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
         }
     }
 }

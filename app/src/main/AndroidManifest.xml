@@ -36,6 +36,12 @@
                 android:resource="@xml/file_paths" />
              </provider>
         <activity
+            android:name=".notice.NoticeDetailActivity"
+            android:exported="true" />
+        <activity
+            android:name=".notice.NoticeListActivity"
+            android:exported="true" />
+        <activity
             android:name=".RegisterActivity"
             android:exported="true" />
         <activity
@@ -50,7 +56,12 @@
         <activity
             android:name=".ProductActivity"
             android:exported="true" />
-
+        <activity
+            android:name=".ProductListActivity"
+            android:exported="true" />
+        <activity
+            android:name=".MainPageActivity"
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true" >

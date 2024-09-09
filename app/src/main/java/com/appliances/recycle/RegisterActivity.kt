@@ -7,17 +7,19 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.appliances.recycle.databinding.ActivityRegisterBinding
 import com.appliances.recycle.repository.RegisterRepository
-import com.appliances.recycle.network.MyApplication
+import com.sylovestp.firebasetest.testspringrestapp.retrofitN.MyApplication
+import com.sylovestp.firebasetest.testspringrestapp.retrofitN.INetworkService
 import com.appliances.recycle.viewModel.RegisterViewModel
 import com.appliances.recycle.viewModelFactory.RegisterViewModelFactory
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
+    private lateinit var networkService: INetworkService
 
     // RegisterViewModel을 ViewModelProvider로 초기화
     private val registerViewModel: RegisterViewModel by viewModels {
-        RegisterViewModelFactory(RegisterRepository(MyApplication.instance))
+        RegisterViewModelFactory(RegisterRepository(networkService))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,6 +28,9 @@ class RegisterActivity : AppCompatActivity() {
         // DataBinding 초기화
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val myApplication = applicationContext as MyApplication
+        networkService = myApplication.networkService
+
 
         // Register 버튼 클릭 이벤트 처리
         binding.btnRegister.setOnClickListener {

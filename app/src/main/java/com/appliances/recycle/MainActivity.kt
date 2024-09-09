@@ -8,21 +8,26 @@ import android.widget.Toast
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
-import com.appliances.recycle.network.MyApplication
+
 import com.appliances.recycle.repository.LoginRepository
 import com.appliances.recycle.viewModel.LoginViewModel
 import com.appliances.recycle.viewModelFactory.LoginViewModelFactory
+import com.sylovestp.firebasetest.testspringrestapp.retrofitN.INetworkService
+import com.sylovestp.firebasetest.testspringrestapp.retrofitN.MyApplication
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var loginViewModel: LoginViewModel
+    private lateinit var networkService: INetworkService
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val myApplication = applicationContext as MyApplication
+        networkService = myApplication.networkService
 
-        val repository = LoginRepository(MyApplication.instance)
+        val repository = LoginRepository(networkService)
         val factory = LoginViewModelFactory(repository)
         loginViewModel = ViewModelProvider(this, factory)[LoginViewModel::class.java]
 

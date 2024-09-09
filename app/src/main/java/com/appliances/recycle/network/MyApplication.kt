@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object MyApplication {
-    private val BASE_URL = "http://10.100.201.6:8080/" // localhost 대신 사용
+    private val BASE_URL = "http://10.100.201.14:8080/" // localhost 대신 사용
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

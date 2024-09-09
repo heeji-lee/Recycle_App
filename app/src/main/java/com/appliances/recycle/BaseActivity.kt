@@ -2,6 +2,7 @@ package com.appliances.recycle
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.appliances.recycle.notice.NoticeListActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView

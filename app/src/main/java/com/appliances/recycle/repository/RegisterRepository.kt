@@ -2,7 +2,7 @@ package com.appliances.recycle.repository
 
 import android.util.Log
 import com.appliances.recycle.SerializedName.RegisterRequest
-import com.appliances.recycle.network.INetworkService
+import com.sylovestp.firebasetest.testspringrestapp.retrofitN.INetworkService
 import okhttp3.ResponseBody
 import retrofit2.Call
 

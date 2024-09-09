@@ -1,6 +1,6 @@
 package com.appliances.recycle.repository
 
-import com.appliances.recycle.network.INetworkService
+import com.sylovestp.firebasetest.testspringrestapp.retrofitN.INetworkService
 
 class LoginRepository(private val apiService: INetworkService) {
 

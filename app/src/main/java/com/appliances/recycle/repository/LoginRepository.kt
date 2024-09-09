@@ -1,8 +1,8 @@
 package com.appliances.recycle.repository
 
-import com.appliances.recycle.network.ImageUploadApi
+import com.appliances.recycle.network.INetworkService
 
-class LoginRepository(private val apiService: ImageUploadApi) {
+class LoginRepository(private val apiService: INetworkService) {
 
     suspend fun login(username: String, password: String): Boolean {
         val response = apiService.login(username, password)

@@ -3,8 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- API 31 이상에서 미디어 이미지 접근을 위한 권한 -->
+    <uses-permission
+        android:name="android.permission.READ_MEDIA_IMAGES"
+        android:required="false"
+        tools:targetApi="31" />
+
+    <!-- 외부 저장소 읽기 권한 (API 33 이하에서 사용) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
+        android:name="com.sylovestp.firebasetest.testspringrestapp.retrofitN.MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -14,7 +24,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Recycle"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31" >
+        tools:targetApi="31"
+        android:requestLegacyExternalStorage="true" > <!-- API 29 이하 호환성 옵션 -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+             </provider>
         <activity
             android:name=".RegisterActivity"
             android:exported="true" />
@@ -30,9 +50,7 @@
         <activity
             android:name=".ProductActivity"
             android:exported="true" />
-        <activity
-            android:name=".CollectListActivity"
-            android:exported="true" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true" >

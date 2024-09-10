@@ -1,0 +1,25 @@
+<resources>
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here -->
+        <item name="colorPrimary">@color/btn</item>
+        <item name="colorPrimaryDark">@color/btn</item>
+        <item name="colorAccent">@color/btn</item>
+        <item name="android:popupMenuStyle">@style/CustomPopupMenu</item>
+        <item name="android:dropDownListViewStyle">@style/CustomPopupMenu</item>
+<!--        <item name="android:buttonStyle">@style/CustomButton</item>-->
+    </style>
+
+    <style name="CustomToolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/btn</item>
+        <item name="titleTextColor">@android:color/black</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
+    <!-- PopupMenu 스타일 -->
+    <style name="CustomPopupMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <item name="android:popupBackground">@android:color/white</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+</resources>

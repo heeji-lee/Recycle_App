@@ -3,7 +3,9 @@ package com.sylovestp.firebasetest.testspringrestapp.retrofitN
 import android.app.Application
 import android.content.Context
 import com.appliances.recycle.interceptorN.AuthInterceptor
+import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -14,17 +16,29 @@ class MyApplication : Application(){
     private lateinit var apiService: INetworkService
 
     // http 퍼미션 허용 및, 로컬호스트 안될시 아이피로 확인 하기.
-    val BASE_URL = "http://10.100.201.14:8080"
+    val BASE_URL = "http://192.168.125.137:8080"
 //    val BASE_URL = "http://192.168.219.200:8080"
 
     //add....................................
     var networkService: INetworkService
 
+    val logging = HttpLoggingInterceptor().apply {
+        setLevel(HttpLoggingInterceptor.Level.BODY)
+    }
+
+    val client = OkHttpClient.Builder()
+        .addInterceptor(logging)
+        .build()
+    val gson = GsonBuilder()
+        .setLenient()
+        .create()
+
 
     val retrofit: Retrofit
         get() = Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
     // 토큰 가져오기 작업

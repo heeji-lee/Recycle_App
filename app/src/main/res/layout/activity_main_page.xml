@@ -11,55 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/CustomToolbar"
-        app:navigationIcon="@drawable/ic_arrow_left" />
+        app:navigationIcon="@drawable/baseline_menu_24" />
 
-    <!-- 메인 이미지 -->
-    <ImageView
-        android:id="@+id/mainImage"
+    <!-- Fragment를 표시할 컨테이너 -->
+    <FrameLayout
+        android:id="@+id/fragment_home"
         android:layout_width="match_parent"
-        android:layout_height="370dp"
+        android:layout_height="match_parent"
         android:layout_below="@id/toolbar"
-        android:scaleType="centerCrop"
-        android:src="@drawable/appmainpage" />
-
-    <!-- 수거 신청 버튼 -->
-    <Button
-        android:id="@+id/btnRequestPickup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="수거신청"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/btn"
-        android:layout_below="@id/mainImage"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"/>
-
-    <!-- 공지사항 버튼 -->
-    <Button
-        android:id="@+id/btnNotice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="공지사항"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/btn"
-        android:layout_below="@id/btnRequestPickup"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"/>
-
-    <!-- 신청현황 버튼 -->
-    <Button
-        android:id="@+id/btnStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="신청현황"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/btn"
-        android:layout_below="@id/btnNotice"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"/>
+        android:layout_above="@id/bottom_navigation" />
 
     <!-- BottomNavigationView (홈 및 공지사항 기능 유지) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -69,6 +29,10 @@
         android:layout_alignParentBottom="true"
         app:menu="@menu/bottom_navigation_menu"
         app:labelVisibilityMode="labeled"
-        android:background="?android:attr/windowBackground"/>
+        app:itemRippleColor="@null"
+        android:background="@color/white"
+        app:itemActiveIndicatorStyle="@android:color/transparent"
+        app:itemIconTint="@color/color_selector"
+        app:itemTextColor="@color/color_selector" />
 
 </RelativeLayout>

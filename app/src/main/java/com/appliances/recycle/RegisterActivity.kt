@@ -1,7 +1,10 @@
 package com.appliances.recycle
 
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -10,22 +13,28 @@ import com.appliances.recycle.repository.RegisterRepository
 import com.appliances.recycle.network.RetrofitClient
 import com.appliances.recycle.viewModel.RegisterViewModel
 import com.appliances.recycle.viewModelFactory.RegisterViewModelFactory
+import com.sylovestp.firebasetest.testspringrestapp.retrofitN.INetworkService
+import com.sylovestp.firebasetest.testspringrestapp.retrofitN.MyApplication
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
+    private lateinit var networkService: INetworkService
 
     // RegisterViewModel을 ViewModelProvider로 초기화
     private val registerViewModel: RegisterViewModel by viewModels {
-        RegisterViewModelFactory(RegisterRepository(RetrofitClient.instance))
+        RegisterViewModelFactory(RegisterRepository(networkService))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         // DataBinding 초기화
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val myApplication = applicationContext as MyApplication
+        networkService = myApplication.networkService  // 인증이 필요 없는 API 사용
 
         // Register 버튼 클릭 이벤트 처리
         binding.btnRegister.setOnClickListener {
@@ -51,6 +60,15 @@ class RegisterActivity : AppCompatActivity() {
                     Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show()
                 }
             )
+        }
+
+        // 상태바 색상 설정
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.apply {
+                clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                statusBarColor = Color.parseColor("#48b8e7")
+            }
         }
     }
 }

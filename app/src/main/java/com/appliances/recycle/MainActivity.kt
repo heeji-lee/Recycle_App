@@ -1,31 +1,35 @@
 package com.appliances.recycle
 
 import android.content.Intent
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.widget.Toast
-import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.appliances.recycle.network.RetrofitClient
 import com.appliances.recycle.repository.LoginRepository
 import com.appliances.recycle.viewModel.LoginViewModel
 import com.appliances.recycle.viewModelFactory.LoginViewModelFactory
+import com.sylovestp.firebasetest.testspringrestapp.retrofitN.INetworkService
+import com.sylovestp.firebasetest.testspringrestapp.retrofitN.MyApplication
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var loginViewModel: LoginViewModel
+    private lateinit var networkService: INetworkService
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val repository = LoginRepository(RetrofitClient.instance)
+        val myApplication = applicationContext as MyApplication
+        networkService = myApplication.networkService  // 인증이 필요 없는 API 사용
+
+        val repository = LoginRepository(networkService)
         val factory = LoginViewModelFactory(repository)
         loginViewModel = ViewModelProvider(this, factory)[LoginViewModel::class.java]
 
@@ -44,26 +48,37 @@ class MainActivity : AppCompatActivity() {
         loginViewModel.loginResult.observe(this) { success ->
             if (success) {
                 Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, MainPageActivity::class.java)
+                startActivity(intent)
             } else {
                 Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show()
             }
         }
 
 
-        // 아이디 찾기, 비밀번호 찾기, 회원가입 이벤트 처리
-        findViewById<TextView>(R.id.forgotId).setOnClickListener {
-            // 아이디 찾기 로직 구현
-        }
-
-        findViewById<TextView>(R.id.forgotPassword).setOnClickListener {
-            // 비밀번호 찾기 로직 구현
-        }
+//        // 아이디 찾기, 비밀번호 찾기, 회원가입 이벤트 처리
+//        findViewById<TextView>(R.id.forgotId).setOnClickListener {
+//            // 아이디 찾기 로직 구현
+//        }
+//
+//        findViewById<TextView>(R.id.forgotPassword).setOnClickListener {
+//            // 비밀번호 찾기 로직 구현
+//        }
 
         // 회원가입 버튼 클릭 리스너
         findViewById<Button>(R.id.btnRegister).setOnClickListener {
             // 회원가입 화면으로 이동하는 예시 Intent
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
+        }
+
+        // 상태바 색상 설정
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.apply {
+                clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                statusBarColor = Color.parseColor("#48b8e7")
+            }
         }
     }
 }

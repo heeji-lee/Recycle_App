@@ -1,6 +1,9 @@
 package com.appliances.recycle.notice
 
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -48,6 +51,15 @@ class NoticeDetailActivity : AppCompatActivity() {
                     Toast.makeText(this@NoticeDetailActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
+        }
+
+        // 상태바 색상 설정
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.apply {
+                clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                statusBarColor = Color.parseColor("#48b8e7")
+            }
         }
     }
 }

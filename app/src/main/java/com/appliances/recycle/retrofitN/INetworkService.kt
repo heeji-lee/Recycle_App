@@ -1,5 +1,6 @@
 package com.sylovestp.firebasetest.testspringrestapp.retrofitN
 
+import com.appliances.recycle.SerializedName.RegisterRequest
 import com.appliances.recycle.dto.LoginRequest
 import com.appliances.recycle.dto.LoginResponse
 import com.appliances.recycle.dto.PredictionResult
@@ -9,6 +10,8 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -19,10 +22,15 @@ interface INetworkService {
 
     @Multipart
     @POST("/uploadImage")
-
     fun predictImage(
 //        @Part("user") user: RequestBody?,          // JSON 데이터
         @Part image: MultipartBody.Part? = null    // 파일 데이터 (Optional)
+    ): Call<String>
+
+    @Multipart
+    @POST("/classify")
+    fun classifyImage(
+        @Part image: MultipartBody.Part
     ): Call<PredictionResult>
 
     @Multipart
@@ -35,6 +43,16 @@ interface INetworkService {
 
     @POST("/generateToken")
     suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
+
+    @FormUrlEncoded
+    @POST("/echopickup/member/login")
+    suspend fun login(
+        @Field("username") username: String,
+        @Field("password") password: String
+    ): Response<Void>
+
+    @POST("/echopickup/member/join")
+    fun join(@Body registerRequest: RegisterRequest): Call<ResponseBody>
 
 //    @GET("/api/users/page")
 //    fun getItems(

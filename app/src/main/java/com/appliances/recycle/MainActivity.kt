@@ -1,32 +1,84 @@
 package com.appliances.recycle
 
+import android.content.Intent
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.Button
+import android.widget.Toast
+import android.widget.EditText
+import androidx.lifecycle.ViewModelProvider
+import com.appliances.recycle.repository.LoginRepository
+import com.appliances.recycle.viewModel.LoginViewModel
+import com.appliances.recycle.viewModelFactory.LoginViewModelFactory
+import com.appliances.recycle.retrofit.INetworkService
+import com.appliances.recycle.retrofit.MyApplication
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var loginViewModel: LoginViewModel
+    private lateinit var networkService: INetworkService
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val myApplication = applicationContext as MyApplication
+        networkService = myApplication.networkService  // 인증이 필요 없는 API 사용
+
+        val repository = LoginRepository(networkService)
+        val factory = LoginViewModelFactory(repository)
+        loginViewModel = ViewModelProvider(this, factory)[LoginViewModel::class.java]
+
+        val loginButton = findViewById<Button>(R.id.btnLogin)
+        val emailEditText = findViewById<EditText>(R.id.editTextEmail)
+        val passwordEditText = findViewById<EditText>(R.id.editTextPassword)
+
         // 로그인 버튼 클릭 이벤트 처리
         findViewById<Button>(R.id.btnLogin).setOnClickListener {
             // 로그인 처리 로직 구현
+            val username = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
+
+            loginViewModel.login(username, password)
         }
 
-        // 아이디 찾기, 비밀번호 찾기, 회원가입 이벤트 처리
-        findViewById<TextView>(R.id.forgotId).setOnClickListener {
-            // 아이디 찾기 로직 구현
+        loginViewModel.loginResult.observe(this) { success ->
+            if (success) {
+                Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, MainPageActivity::class.java)
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show()
+            }
         }
 
-        findViewById<TextView>(R.id.forgotPassword).setOnClickListener {
-            // 비밀번호 찾기 로직 구현
+//        // 아이디 찾기, 비밀번호 찾기, 회원가입 이벤트 처리
+//        findViewById<TextView>(R.id.forgotId).setOnClickListener {
+//            // 아이디 찾기 로직 구현
+//        }
+//
+//        findViewById<TextView>(R.id.forgotPassword).setOnClickListener {
+//            // 비밀번호 찾기 로직 구현
+//        }
+
+        // 회원가입 버튼 클릭 리스너
+        findViewById<Button>(R.id.btnRegister).setOnClickListener {
+            // 회원가입 화면으로 이동하는 예시 Intent
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
         }
 
-        findViewById<TextView>(R.id.register).setOnClickListener {
-            // 회원가입 로직 구현
+        // 상태바 색상 설정
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.apply {
+                clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                statusBarColor = Color.parseColor("#48b8e7")
+            }
         }
     }
 }

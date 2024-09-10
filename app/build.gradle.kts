@@ -73,6 +73,8 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     // retrofit 추가, gson 컨버터 추가.
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+
+
     // json 변환하기 위한 라이브러리, gson 예시.
     implementation ("com.google.code.gson:gson:2.8.9")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
@@ -100,7 +102,7 @@ dependencies {
 //    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
 //    implementation("androidx.activity:activity-ktx:1.7.2")
 //    implementation("androidx.core:core-ktx:1.12.0")
-//    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
 //    implementation("com.google.android.material:material:1.9.0")
 //    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 

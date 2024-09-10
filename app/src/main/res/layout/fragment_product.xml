@@ -1,16 +1,14 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/product"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="20dp">
+    tools:context=".ProductFragment">
 
+    <!-- ScrollView로 전체 내용을 감쌈 -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/bottom_navigation"
-        android:layout_alignParentTop="true">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -18,7 +16,9 @@
             android:orientation="vertical"
             android:gravity="center">
 
+            <!-- 첫 번째 줄: 세탁기, 냉장고 -->
             <LinearLayout
+                android:layout_marginTop="35dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -37,7 +37,6 @@
                         android:id="@+id/btn_washing_machine"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:layout_weight="1"
                         android:background="@drawable/washing_machine" />
 
                     <TextView
@@ -57,7 +56,6 @@
                         android:id="@+id/btn_refrigerator"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:layout_weight="1"
                         android:background="@drawable/refrigerator" />
 
                     <TextView
@@ -69,6 +67,7 @@
 
             </LinearLayout>
 
+            <!-- 두 번째 줄: 에어컨, TV -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -88,7 +87,6 @@
                         android:id="@+id/btn_air_conditioner"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:layout_weight="1"
                         android:background="@drawable/air_conditioner" />
 
                     <TextView
@@ -108,7 +106,6 @@
                         android:id="@+id/btn_tv"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:layout_weight="1"
                         android:background="@drawable/tv" />
 
                     <TextView
@@ -120,6 +117,7 @@
 
             </LinearLayout>
 
+            <!-- 세 번째 줄: 컴퓨터(부품), 전자레인지 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -139,7 +137,6 @@
                         android:id="@+id/btn_computer"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:layout_weight="1"
                         android:background="@drawable/ram" />
 
                     <TextView
@@ -159,7 +156,6 @@
                         android:id="@+id/btn_oven"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:layout_weight="1"
                         android:background="@drawable/oven" />
 
                     <TextView
@@ -168,22 +164,27 @@
                         android:text="전자레인지"
                         android:textSize="16sp" />
                 </LinearLayout>
+
             </LinearLayout>
 
+            <!-- 사진 첨부 요청 -->
             <TextView
+                android:id="@+id/predict_result_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="사진을 첨부해 주세요"
                 android:textSize="16sp"
                 android:layout_marginBottom="8dp" />
 
+            <!-- 사진 첨부 버튼 -->
             <ImageView
                 android:id="@+id/btn_photo"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:background="@drawable/photo"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="16dp" />
 
+            <!-- 취소, 품목 추가 버튼 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -214,12 +215,4 @@
 
     </ScrollView>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_navigation_menu" />
-
-</RelativeLayout>
+</FrameLayout>

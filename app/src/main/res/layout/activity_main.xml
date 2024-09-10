@@ -1,37 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     android:background="@color/white">
-
-    <!-- 상단 헤더 이미지 -->
-
-    <!-- 환영 문구 -->
 
     <ImageView
         android:id="@+id/logoImage"
         android:layout_width="246dp"
         android:layout_height="82dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="110dp"
-        android:scaleType="fitXY"
-        android:layout_marginLeft="60dp"
-        android:src="@drawable/mainlogo" />
+        android:layout_marginTop="60dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/mainlogo"
+        android:scaleType="fitXY"/>
 
     <TextView
         android:id="@+id/welcomeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/logoImage"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="25dp"
         android:text="환영합니다.\n에코픽업입니다 :)"
         android:textColor="@android:color/black"
-        android:textSize="24sp"
-        android:layout_marginLeft="25dp"/>
+        android:textSize="24sp" />
 
-    <!-- 아이디 입력 -->
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="match_parent"
@@ -45,7 +39,6 @@
         android:background="@drawable/rounded_edit_text_with_border"
         android:padding="12dp"/>
 
-    <!-- 비밀번호 입력 -->
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="match_parent"
@@ -59,132 +52,34 @@
         android:background="@drawable/rounded_edit_text_with_border"
         android:padding="12dp"/>
 
-    <!-- 로그인 버튼 -->
-    <Button
-        android:id="@+id/btnLogin"
-        android:layout_width="330dp"
-        android:layout_height="60dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@id/editTextPassword"
-        android:layout_marginStart="25dp"
         android:layout_marginTop="24dp"
+        android:layout_marginStart="25dp"
         android:layout_marginEnd="25dp"
-        android:backgroundTint="@color/logocolor"
-        android:text="로그인"
-        android:textColor="@android:color/white" />
-
-    <!-- 하단의 구분바 (아이디 찾기, 비밀번호 찾기, 회원가입) -->
-    <LinearLayout
-        android:layout_width="377dp"
-        android:layout_height="45dp"
-        android:layout_below="@id/btnLogin"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/forgotId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="아이디 찾기"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:text=" | "
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/forgotPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="비밀번호 찾기"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:text=" | "
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/register"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="회원가입"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
-    </LinearLayout>
-
-    <!-- 하단의 링크탭 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:orientation="horizontal"
-        android:weightSum="5"
-        android:background="@android:color/white">
+        android:weightSum="2">
 
-        <!-- 홈 -->
-        <ImageView
-            android:id="@+id/homeIcon"
+        <Button
+            android:id="@+id/btnLogin"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_view"
-            android:padding="8dp"/>
+            android:layout_marginRight="10dp"
+            android:backgroundTint="@color/logocolor"
+            android:text="로그인"
+            android:textColor="@android:color/white" />
 
-        <!-- 수거현황 -->
-        <ImageView
-            android:id="@+id/collectionStatusIcon"
+        <Button
+            android:id="@+id/btnRegister"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_agenda"
-            android:padding="8dp"/>
-
-        <!-- 카메라 기능 -->
-        <ImageView
-            android:id="@+id/cameraIcon"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_camera"
-            android:padding="8dp"/>
-
-        <!-- 알림 -->
-        <ImageView
-            android:id="@+id/notificationIcon"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_info_details"
-            android:padding="8dp"/>
-
-        <!-- 마이페이지 -->
-        <ImageView
-            android:id="@+id/myPageIcon"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_manage"
-            android:padding="8dp"/>
+            android:backgroundTint="@color/logocolor"
+            android:text="회원가입"
+            android:textColor="@android:color/white" />
     </LinearLayout>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_navigation_menu" />
 
 </RelativeLayout>

@@ -198,7 +198,7 @@
                     android:layout_weight="1"
                     android:text="취소"
                     android:textColor="@android:color/white"
-                    android:backgroundTint="@color/btn" />
+                    android:backgroundTint="@color/btn"/>
 
                 <Button
                     android:id="@+id/btn_add_item"
@@ -208,8 +208,15 @@
                     android:text="품목추가"
                     android:textColor="@android:color/white"
                     android:layout_marginStart="16dp"
-                    android:backgroundTint="@color/btn" />
+                    android:backgroundTint="@color/btn"/>
             </LinearLayout>
+            <!-- 추가된 아이템을 보여주는 테이블 레이아웃 -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                tools:listitem="@layout/item_row_layout" />
 
         </LinearLayout>
 

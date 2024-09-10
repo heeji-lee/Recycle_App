@@ -18,16 +18,24 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ListView
+import android.widget.TableLayout
+import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.appliances.recycle.adapter.ItemAdapter
 import com.appliances.recycle.databinding.FragmentProductBinding
+import com.appliances.recycle.dto.ItemDTO
 import com.appliances.recycle.dto.PredictionResult
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.FutureTarget
@@ -52,49 +60,77 @@ import java.util.Date
 
 class ProductFragment : Fragment() {
 
-    private lateinit var apiService: INetworkService
     private lateinit var networkService: INetworkService
     private lateinit var imageView: ImageView
     private lateinit var resultView: TextView
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var itemAdapter: ItemAdapter
     private var imageUri: Uri? = null  // Nullable URI
+    private var predictionResult: PredictionResult? = null  // 변수를 클래스 멤버로 선언
 
-    private val cameraRequestCode = 1
-    private val REQUEST_PERMISSION = 1001
+        private val REQUEST_PERMISSION = 1001
     private lateinit var cameraImageUri: Uri
+    private var actionAfterPermission: (() -> Unit)? = null // 권한 후에 실행할 액션 저장
+    private var itemDTOList: MutableList<ItemDTO> = mutableListOf() // 서버에서 받아온 아이템 목록을 저장할 리스트
 
     // 권한 체크 및 요청
-    private fun checkPermissions() {
+    private fun checkPermissions(action: () -> Unit): Boolean {
+        val permissionsNeeded = mutableListOf<String>()
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // API 31 이상: READ_MEDIA_IMAGES 권한을 요청
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_MEDIA_IMAGES), REQUEST_PERMISSION)
-            }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // API 29 이상: WRITE_EXTERNAL_STORAGE 권한 필요하지 않음, READ_EXTERNAL_STORAGE만 요청
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_PERMISSION)
+                permissionsNeeded.add(Manifest.permission.READ_MEDIA_IMAGES)
             }
         } else {
-            // API 28 이하: WRITE_EXTERNAL_STORAGE 권한을 요청
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_PERMISSION)
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             }
         }
 
-        // 카메라 권한 요청
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), REQUEST_PERMISSION)
+            permissionsNeeded.add(Manifest.permission.CAMERA)
+        }
+
+        return if (permissionsNeeded.isNotEmpty()) {
+            actionAfterPermission = action // 권한 부여 후 수행할 동작을 저장
+            ActivityCompat.requestPermissions(requireActivity(), permissionsNeeded.toTypedArray(), REQUEST_PERMISSION)
+            false
+        } else {
+            true
         }
     }
+
 
     // 권한 요청 결과 처리
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_PERMISSION) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(requireContext(), "권한이 부여되었습니다.", Toast.LENGTH_SHORT).show()
+            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                Toast.makeText(requireContext(), "모든 권한이 부여되었습니다.", Toast.LENGTH_SHORT).show()
+                actionAfterPermission?.invoke() // 권한이 부여되면 저장된 액션을 실행
             } else {
-                Toast.makeText(requireContext(), "권한이 거부되었습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "필수 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    // 이미지 선택 후 처리하는 ActivityResultLauncher
+    private val selectImageLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            imageUri = result.data?.data ?: cameraImageUri
+
+            // 이미지가 선택되었을 때만 processImage 호출
+            if (imageUri != null) {
+                Glide.with(this)
+                    .load(imageUri)
+                    .into(imageView)
+                processImage(imageUri!!)
+            } else {
+                Toast.makeText(requireContext(), "이미지를 선택하지 않았습니다.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -109,6 +145,8 @@ class ProductFragment : Fragment() {
 
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, options)
         listView.adapter = adapter
+
+
 
         listView.setOnItemClickListener { _, _, position, _ ->
             when (position) {
@@ -125,6 +163,8 @@ class ProductFragment : Fragment() {
 
     // 카메라 열기
     private fun openCamera() {
+        if (!checkPermissions { openCamera() }) return
+
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         val photoFile: File? = try {
             createImageFile()
@@ -148,13 +188,12 @@ class ProductFragment : Fragment() {
 
     // 갤러리 열기
     private fun openGallery() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            selectImageLauncher.launch(intent)
-        } else {
-            Toast.makeText(requireContext(), "저장소 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-        }
+        if (!checkPermissions { openGallery() }) return
+
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        selectImageLauncher.launch(intent)
     }
+
 
     // 이미지 파일 생성 (임시 파일 생성, 앱의 외부 저장소 저장)
     @Throws(IOException::class)
@@ -168,25 +207,6 @@ class ProductFragment : Fragment() {
         )
     }
 
-    // 이미지 선택 후 처리하는 ActivityResultLauncher
-    private val selectImageLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            if (result.data != null && result.data?.data != null) {
-                // 갤러리에서 이미지를 선택한 경우
-                imageUri = result.data?.data
-            } else {
-                // 카메라로 사진을 찍은 경우
-                imageUri = cameraImageUri
-            }
-
-            // 이미지 로드
-            Glide.with(this)
-                .load(imageUri)
-                .into(imageView)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -194,6 +214,8 @@ class ProductFragment : Fragment() {
     ): View? {
         // View 바인딩 설정
         val binding = FragmentProductBinding.inflate(inflater, container, false)
+        // 테이블 레이아웃 초기화
+        recyclerView = binding.recyclerView
         return binding.root
     }
 
@@ -207,8 +229,12 @@ class ProductFragment : Fragment() {
         imageView = view.findViewById(R.id.btn_photo)
         resultView = view.findViewById(R.id.predict_result_view)
 
+        itemAdapter = ItemAdapter(itemDTOList) { item -> deleteItem(item) }
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = itemAdapter
+
         // 권한 확인
-        checkPermissions()
+        checkPermissions{}
 
         // ApplicationContext에서 네트워크 서비스 초기화
         val myApplication = requireActivity().applicationContext as MyApplication
@@ -217,8 +243,6 @@ class ProductFragment : Fragment() {
         // 버튼 클릭 이벤트 설정
         view.findViewById<ImageView>(R.id.btn_photo).setOnClickListener {
             showImageSourceDialog() // 이미지 소스 선택 다이얼로그 호출
-            Toast.makeText(requireContext(), " ${imageUri}", Toast.LENGTH_SHORT).show()
-            imageUri?.let { it -> processImage(it) } // 이미지 처리 함수 호출
         }
 
         // 기타 버튼 이벤트 설정
@@ -226,10 +250,66 @@ class ProductFragment : Fragment() {
             Toast.makeText(requireContext(), "세탁기 선택", Toast.LENGTH_SHORT).show()
         }
 
+        view.findViewById<Button>(R.id.btn_add_item).setOnClickListener {
+            // 품목 추가 버튼 클릭 시 테이블에 등록
+            if (predictionResult?.predictedClassLabel != null) {
+                addMatchingItemsToRecyclerView()
+            } else {
+                Toast.makeText(requireContext(), "먼저 이미지를 등록하세요.", Toast.LENGTH_SHORT).show()
+                Log.d("lsy", "결과값"+predictionResult)
+            }
+        }
+
         view.findViewById<Button>(R.id.btn_cancel).setOnClickListener {
-            Toast.makeText(requireContext(), "취소", Toast.LENGTH_SHORT).show()
+            // 테이블에서 모든 아이템 삭제
+            clearItems()
+            Toast.makeText(requireContext(), "모든 항목이 취소되었습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+        // 아이템 목록 불러오기
+        getAllItemsFromServer()
+    }
+    // 아이템 목록을 서버에서 가져오는 함수
+    private fun getAllItemsFromServer() {
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val response = networkService.getAllItems().execute()
+                if (response.isSuccessful) {
+                    itemDTOList = response.body() ?: mutableListOf()
+                    withContext(Dispatchers.Main) {
+                        itemAdapter.notifyDataSetChanged() // 아이템 목록 갱신
+                    }
+                } else {
+                    Log.e("API", "서버 오류: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "아이템 목록을 불러오는 중 오류 발생", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
+    // 아이템 목록을 테이블에 추가하는 함수
+    private fun addMatchingItemsToRecyclerView() {
+        val predictedLabel = predictionResult?.predictedClassLabel
+
+        // 분류 결과와 일치하는 아이템만 RecyclerView에 추가
+        val matchingItems = itemDTOList.filter { it.iname == predictedLabel }
+        if (matchingItems.isNotEmpty()) {
+            itemAdapter.notifyDataSetChanged() // 어댑터에 데이터 변경 알림
+        }
+    }
+    // 테이블에서 아이템을 삭제하는 함수
+    private fun deleteItem(item: ItemDTO) {
+        itemAdapter.deleteItem(item) // 어댑터에서 아이템 삭제
+    }
+    private fun clearItems() {
+        itemDTOList.clear() // 아이템 목록 초기화
+        itemAdapter.notifyDataSetChanged() // RecyclerView 갱신
+        Toast.makeText(requireContext(), "모든 항목이 취소되었습니다.", Toast.LENGTH_SHORT).show()
+    }
+
 
     // 이미지 처리 후, 서버로 전송하는 함수
     private fun processImage(uri: Uri) {
@@ -269,7 +349,7 @@ class ProductFragment : Fragment() {
     private fun classifyImage(uri: Uri) {
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                val resizedBitmap = getResizedBitmap(uri, 200, 200)
+                val resizedBitmap = getResizedBitmap(uri, 300, 300)
                 val imageBytes = bitmapToByteArray(resizedBitmap)
                 val imageName = uri.lastPathSegment?.substringAfterLast("/")?.substringBeforeLast(".") ?: "default_image"
                 val imagePart = createMultipartBodyFromBytes(imageBytes, imageName)
@@ -278,7 +358,7 @@ class ProductFragment : Fragment() {
                 classifyCall.enqueue(object : Callback<PredictionResult> {
                     override fun onResponse(call: Call<PredictionResult>, response: Response<PredictionResult>) {
                         if (response.isSuccessful) {
-                            val predictionResult = response.body()
+                            predictionResult = response.body()
                             val resultText = """
                                 분류 결과 : ${predictionResult?.predictedClassLabel ?: "Unknown"}
                                 정확도 : ${formatToPercentage(predictionResult?.confidence ?: 0.0)}
@@ -287,7 +367,8 @@ class ProductFragment : Fragment() {
                             requireActivity().runOnUiThread {
                                 resultView.text = resultText
                                 Toast.makeText(requireContext(), "분류 완료", Toast.LENGTH_SHORT).show()
-                            }
+                                Log.d("lsy", " 분류 결과 : ${predictionResult?.predictedClassLabel}")
+                                view?.findViewById<Button>(R.id.btn_add_item)?.isEnabled = true}
                         } else {
                             Log.e("Classify", "분류 서버 오류: ${response.code()}")
                         }

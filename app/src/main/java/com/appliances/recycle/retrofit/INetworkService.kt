@@ -1,5 +1,6 @@
 package com.appliances.recycle.retrofit
 
+import com.appliances.recycle.dto.ItemDTO
 import com.appliances.recycle.dto.RegisterRequest
 import com.appliances.recycle.dto.LoginRequest
 import com.appliances.recycle.dto.LoginResponse
@@ -65,6 +66,9 @@ interface INetworkService {
     // 공지사항 상세 정보 가져오기
     @GET("/echopickup/api/notices/{nno}")
     fun getNoticeDetail(@Path("nno") nno: Long): Call<Notice>
+
+    @GET("/api/getAllItems")
+    fun getAllItems(): Call<MutableList<ItemDTO>> // 서버에서 아이템 목록을 가져오는 API
 
 //    @GET("/api/users/page")
 //    fun getItems(

@@ -58,7 +58,7 @@
                 android:id="@+id/btnStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="신청현황"
+                android:text="수거현황"
                 android:textColor="@android:color/white"
                 android:backgroundTint="@color/btn"
                 android:layout_below="@id/btnNotice"

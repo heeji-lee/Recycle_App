@@ -45,13 +45,7 @@
             android:name=".ReservationDetailActivity"
             android:exported="true" />
         <activity
-            android:name=".AppCompatActivity"
-            android:exported="true" />
-        <activity
             android:name=".DateSelectActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ProductListActivity"
             android:exported="true" />
         <activity
             android:name=".MainPageActivity"

@@ -35,7 +35,7 @@ class NoticeListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        requireActivity().window.decorView
 
         val myApplication = requireActivity().applicationContext as MyApplication
         networkService = myApplication.networkService  // 인증이 필요 없는 API 사용

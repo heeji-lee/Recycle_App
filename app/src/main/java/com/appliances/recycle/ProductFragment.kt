@@ -201,7 +201,7 @@ class ProductFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Edge-to-Edge 활성화
-        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        requireActivity().window.decorView
 
         // View 요소 초기화
         imageView = view.findViewById(R.id.btn_photo)

@@ -56,14 +56,14 @@ interface INetworkService {
     @POST("/echopickup/member/join")
     fun join(@Body registerRequest: RegisterRequest): Call<ResponseBody>
 
-    @GET("api/notices")
+    @GET("/echopickup/api/notices")
     fun getNotices(
         @Query("page") page: Int,
         @Query("size") size: Int
     ): Call<List<Notice>>
 
     // 공지사항 상세 정보 가져오기
-    @GET("api/notices/{nno}")
+    @GET("/echopickup/api/notices/{nno}")
     fun getNoticeDetail(@Path("nno") nno: Long): Call<Notice>
 
 //    @GET("/api/users/page")

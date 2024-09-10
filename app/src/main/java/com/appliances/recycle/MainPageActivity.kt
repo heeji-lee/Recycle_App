@@ -1,14 +1,11 @@
 package com.appliances.recycle
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import android.widget.Button
 import androidx.fragment.app.Fragment
-import com.appliances.recycle.notice.NoticeListFragment
 
 class MainPageActivity : BaseActivity() {
 

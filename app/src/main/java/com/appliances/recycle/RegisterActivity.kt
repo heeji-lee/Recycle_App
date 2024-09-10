@@ -10,11 +10,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.appliances.recycle.databinding.ActivityRegisterBinding
 import com.appliances.recycle.repository.RegisterRepository
-import com.appliances.recycle.network.RetrofitClient
 import com.appliances.recycle.viewModel.RegisterViewModel
 import com.appliances.recycle.viewModelFactory.RegisterViewModelFactory
-import com.sylovestp.firebasetest.testspringrestapp.retrofitN.INetworkService
-import com.sylovestp.firebasetest.testspringrestapp.retrofitN.MyApplication
+import com.appliances.recycle.retrofit.INetworkService
+import com.appliances.recycle.retrofit.MyApplication
 
 class RegisterActivity : AppCompatActivity() {
 

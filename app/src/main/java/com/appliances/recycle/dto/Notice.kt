@@ -1,4 +1,4 @@
-package com.appliances.recycle.notice
+package com.appliances.recycle.dto
 
 data class Notice(
     val nno: Long,

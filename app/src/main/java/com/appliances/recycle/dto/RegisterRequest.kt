@@ -1,4 +1,4 @@
-package com.appliances.recycle.SerializedName
+package com.appliances.recycle.dto
 
 data class RegisterRequest(
     val email: String,

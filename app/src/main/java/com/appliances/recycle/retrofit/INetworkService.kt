@@ -1,9 +1,10 @@
-package com.sylovestp.firebasetest.testspringrestapp.retrofitN
+package com.appliances.recycle.retrofit
 
-import com.appliances.recycle.SerializedName.RegisterRequest
+import com.appliances.recycle.dto.RegisterRequest
 import com.appliances.recycle.dto.LoginRequest
 import com.appliances.recycle.dto.LoginResponse
 import com.appliances.recycle.dto.PredictionResult
+import com.appliances.recycle.dto.Notice
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -16,6 +17,7 @@ import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface INetworkService {
@@ -53,6 +55,16 @@ interface INetworkService {
 
     @POST("/echopickup/member/join")
     fun join(@Body registerRequest: RegisterRequest): Call<ResponseBody>
+
+    @GET("api/notices")
+    fun getNotices(
+        @Query("page") page: Int,
+        @Query("size") size: Int
+    ): Call<List<Notice>>
+
+    // 공지사항 상세 정보 가져오기
+    @GET("api/notices/{nno}")
+    fun getNoticeDetail(@Path("nno") nno: Long): Call<Notice>
 
 //    @GET("/api/users/page")
 //    fun getItems(

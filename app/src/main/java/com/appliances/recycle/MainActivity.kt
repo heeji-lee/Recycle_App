@@ -13,8 +13,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.appliances.recycle.repository.LoginRepository
 import com.appliances.recycle.viewModel.LoginViewModel
 import com.appliances.recycle.viewModelFactory.LoginViewModelFactory
-import com.sylovestp.firebasetest.testspringrestapp.retrofitN.INetworkService
-import com.sylovestp.firebasetest.testspringrestapp.retrofitN.MyApplication
+import com.appliances.recycle.retrofit.INetworkService
+import com.appliances.recycle.retrofit.MyApplication
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
 
             loginViewModel.login(username, password)
         }
+
         loginViewModel.loginResult.observe(this) { success ->
             if (success) {
                 Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
@@ -54,7 +55,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show()
             }
         }
-
 
 //        // 아이디 찾기, 비밀번호 찾기, 회원가입 이벤트 처리
 //        findViewById<TextView>(R.id.forgotId).setOnClickListener {

@@ -1,4 +1,4 @@
-package com.sylovestp.firebasetest.testspringrestapp.retrofitN
+package com.appliances.recycle.retrofit
 
 import android.app.Application
 import android.content.Context

@@ -1,8 +1,8 @@
 package com.appliances.recycle.repository
 
 import android.util.Log
-import com.appliances.recycle.SerializedName.RegisterRequest
-import com.sylovestp.firebasetest.testspringrestapp.retrofitN.INetworkService
+import com.appliances.recycle.dto.RegisterRequest
+import com.appliances.recycle.retrofit.INetworkService
 import okhttp3.ResponseBody
 import retrofit2.Call
 

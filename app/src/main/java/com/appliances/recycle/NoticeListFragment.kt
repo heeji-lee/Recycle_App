@@ -1,4 +1,4 @@
-package com.appliances.recycle.notice
+package com.appliances.recycle
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,8 +8,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.appliances.recycle.R
-import com.appliances.recycle.retrofit.RetrofitInstance
+import com.appliances.recycle.adapter.NoticeAdapter
+import com.appliances.recycle.dto.Notice
+import com.appliances.recycle.retrofit.INetworkService
+import com.appliances.recycle.retrofit.MyApplication
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,6 +23,7 @@ class NoticeListFragment : Fragment() {
     private var isLoading = false
     private var currentPage = 0
     private val pageSize = 10
+    private lateinit var networkService: INetworkService
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +35,10 @@ class NoticeListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+
+        val myApplication = requireActivity().applicationContext as MyApplication
+        networkService = myApplication.networkService  // 인증이 필요 없는 API 사용
 
         // RecyclerView 초기화
         recyclerView = view.findViewById(R.id.recyclerView)
@@ -65,7 +72,7 @@ class NoticeListFragment : Fragment() {
     private fun loadNotices(page: Int, size: Int) {
         isLoading = true
 
-        RetrofitInstance.api.getNotices(page = page, size = size).enqueue(object : Callback<List<Notice>> {
+        networkService.getNotices(page = page, size = size).enqueue(object : Callback<List<Notice>> {
             override fun onResponse(call: Call<List<Notice>>, response: Response<List<Notice>>) {
                 if (response.isSuccessful) {
                     response.body()?.let { notices ->

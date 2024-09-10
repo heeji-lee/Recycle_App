@@ -1,4 +1,4 @@
-package com.appliances.recycle.notice
+package com.appliances.recycle
 
 import android.graphics.Color
 import android.os.Build
@@ -8,13 +8,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.appliances.recycle.R
-import com.appliances.recycle.retrofit.RetrofitInstance
+import com.appliances.recycle.dto.Notice
+import com.appliances.recycle.retrofit.INetworkService
+import com.appliances.recycle.retrofit.MyApplication
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class NoticeDetailActivity : AppCompatActivity() {
+
+    private lateinit var networkService: INetworkService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +25,10 @@ class NoticeDetailActivity : AppCompatActivity() {
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+
+        val myApplication = applicationContext as MyApplication
+        networkService = myApplication.networkService  // 인증이 필요 없는 API 사용
 
         supportActionBar?.setDisplayShowTitleEnabled(false)
         // 뒤로 가기 버튼 동작
@@ -34,7 +41,7 @@ class NoticeDetailActivity : AppCompatActivity() {
         val noticeContent = findViewById<TextView>(R.id.noticeContent)
 
         if (nno != -1L) {
-            RetrofitInstance.api.getNoticeDetail(nno).enqueue(object : Callback<Notice> {
+            networkService.getNoticeDetail(nno).enqueue(object : Callback<Notice> {
                 override fun onResponse(call: Call<Notice>, response: Response<Notice>) {
                     if (response.isSuccessful) {
                         val notice = response.body()

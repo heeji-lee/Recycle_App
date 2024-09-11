@@ -245,19 +245,19 @@ class ProductFragment : Fragment() {
         }
 
 
-        view.findViewById<Button>(R.id.btn_add_item).setOnClickListener {
-            if (predictionResult?.predictedClassLabel != null) {
-                addMatchingItemsToRecyclerView()
-            } else {
-                Toast.makeText(requireContext(), "먼저 이미지를 등록하세요.", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        view.findViewById<Button>(R.id.btn_cancel).setOnClickListener {
-            // 테이블에서 모든 아이템 삭제
-            clearItems()
-            Toast.makeText(requireContext(), "모든 항목이 취소되었습니다.", Toast.LENGTH_SHORT).show()
-        }
+//        view.findViewById<Button>(R.id.btn_add_item).setOnClickListener {
+//            if (predictionResult?.predictedClassLabel != null) {
+//                addMatchingItemsToRecyclerView()
+//            } else {
+//                Toast.makeText(requireContext(), "먼저 이미지를 등록하세요.", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//
+//        view.findViewById<Button>(R.id.btn_cancel).setOnClickListener {
+//            // 테이블에서 모든 아이템 삭제
+//            clearItems()
+//            Toast.makeText(requireContext(), "모든 항목이 취소되었습니다.", Toast.LENGTH_SHORT).show()
+//        }
 
         // 아이템 목록 불러오기
         getAllItemsFromServer()
@@ -422,44 +422,44 @@ class ProductFragment : Fragment() {
         val view = layoutInflater.inflate(R.layout.dialog_item_selection, null)
 
         // 6개의 이미지 버튼
-        val fridgeButton = view.findViewById<ImageButton>(R.id.btn_refrigerator2)
-        val airConditionerButton = view.findViewById<ImageButton>(R.id.btn_air_conditioner2)
-        val computerButton = view.findViewById<ImageButton>(R.id.btn_computer2)
-        val tvButton = view.findViewById<ImageButton>(R.id.btn_tv2)
-        val ovenButton = view.findViewById<ImageButton>(R.id.btn_oven2)
-        val washingMachineButton = view.findViewById<ImageButton>(R.id.btn_washing_machine2)
-
-        // 각 버튼 클릭 이벤트 설정
-        fridgeButton.setOnClickListener {
-            showSubItemSelectionDialog("냉장고")
-            selectionDialog.dismiss()
-        }
-
-        airConditionerButton.setOnClickListener {
-            showSubItemSelectionDialog("에어컨")
-            selectionDialog.dismiss()
-        }
-
-        computerButton.setOnClickListener {
-            showSubItemSelectionDialog("컴퓨터(부품)")
-            selectionDialog.dismiss()
-        }
-
-        // 나머지 버튼들은 바로 해당 제품의 정보를 가져와 등록
-        tvButton.setOnClickListener {
-            fetchAndDisplayItem("TV")
-            selectionDialog.dismiss()
-        }
-
-        ovenButton.setOnClickListener {
-            fetchAndDisplayItem("전자레인지")
-            selectionDialog.dismiss()
-        }
-
-        washingMachineButton.setOnClickListener {
-            fetchAndDisplayItem("세탁기")
-            selectionDialog.dismiss()
-        }
+//        val fridgeButton = view.findViewById<ImageButton>(R.id.btn_refrigerator2)
+//        val airConditionerButton = view.findViewById<ImageButton>(R.id.btn_air_conditioner2)
+//        val computerButton = view.findViewById<ImageButton>(R.id.btn_computer2)
+//        val tvButton = view.findViewById<ImageButton>(R.id.btn_tv2)
+//        val ovenButton = view.findViewById<ImageButton>(R.id.btn_oven2)
+//        val washingMachineButton = view.findViewById<ImageButton>(R.id.btn_washing_machine2)
+//
+//        // 각 버튼 클릭 이벤트 설정
+//        fridgeButton.setOnClickListener {
+//            showSubItemSelectionDialog("냉장고")
+//            selectionDialog.dismiss()
+//        }
+//
+//        airConditionerButton.setOnClickListener {
+//            showSubItemSelectionDialog("에어컨")
+//            selectionDialog.dismiss()
+//        }
+//
+//        computerButton.setOnClickListener {
+//            showSubItemSelectionDialog("컴퓨터(부품)")
+//            selectionDialog.dismiss()
+//        }
+//
+//        // 나머지 버튼들은 바로 해당 제품의 정보를 가져와 등록
+//        tvButton.setOnClickListener {
+//            fetchAndDisplayItem("TV")
+//            selectionDialog.dismiss()
+//        }
+//
+//        ovenButton.setOnClickListener {
+//            fetchAndDisplayItem("전자레인지")
+//            selectionDialog.dismiss()
+//        }
+//
+//        washingMachineButton.setOnClickListener {
+//            fetchAndDisplayItem("세탁기")
+//            selectionDialog.dismiss()
+//        }
 
         selectionDialog.setContentView(view)
         selectionDialog.show()

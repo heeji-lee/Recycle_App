@@ -52,14 +52,29 @@ dependencies {
 //    implementation(libs.androidx.activity)
 //    val roomVersion = "2.5.1"
 
-    //뷰페이져2 추가
+    //추가 pytorch test 도구
+    implementation ("com.squareup.okhttp3:okhttp:4.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
+    //room
+    implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
+    implementation("androidx.core:core-ktx:1.12.0")
+    ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
+    implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
+
+    // bottom 네비게이션 바
+    implementation ("com.google.android.material:material:1.9.0")
+    // OkHttp Logging Interceptor (for logging network requests)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
+    // 뷰페이져2 추가
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
     // 코루틴 추가
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'")
-    //glide 추가
+    // glide 추가
     implementation ("com.github.bumptech.glide:glide:4.12.0")
-    //retrofit 추가, gson 컨버터 추가.
+    // retrofit 추가, gson 컨버터 추가.
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+
+
     // json 변환하기 위한 라이브러리, gson 예시.
     implementation ("com.google.code.gson:gson:2.8.9")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
@@ -70,14 +85,13 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
 
 
-    //room
+    // room
     implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
     implementation("androidx.core:core-ktx:1.12.0")
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
     implementation("androidx.activity:activity-ktx:1.7.2")
-    //room
 
 //    // Room 라이브러리 의존성
 //    implementation("androidx.room:room-runtime:$roomVersion")
@@ -88,7 +102,7 @@ dependencies {
 //    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
 //    implementation("androidx.activity:activity-ktx:1.7.2")
 //    implementation("androidx.core:core-ktx:1.12.0")
-//    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
 //    implementation("com.google.android.material:material:1.9.0")
 //    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 

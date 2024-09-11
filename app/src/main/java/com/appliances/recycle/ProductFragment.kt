@@ -67,6 +67,7 @@ class ProductFragment : Fragment() {
     private lateinit var itemAdapter: ItemAdapter
     private var imageUri: Uri? = null  // Nullable URI
     private var predictionResult: PredictionResult? = null  // 변수를 클래스 멤버로 선언
+    private var isUploading = false  // 중복 업로드 방지
 
         private val REQUEST_PERMISSION = 1001
     private lateinit var cameraImageUri: Uri
@@ -145,8 +146,6 @@ class ProductFragment : Fragment() {
 
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, options)
         listView.adapter = adapter
-
-
 
         listView.setOnItemClickListener { _, _, position, _ ->
             when (position) {
@@ -245,18 +244,12 @@ class ProductFragment : Fragment() {
             showImageSourceDialog() // 이미지 소스 선택 다이얼로그 호출
         }
 
-        // 기타 버튼 이벤트 설정
-        view.findViewById<ImageButton>(R.id.btn_washing_machine).setOnClickListener {
-            Toast.makeText(requireContext(), "세탁기 선택", Toast.LENGTH_SHORT).show()
-        }
 
         view.findViewById<Button>(R.id.btn_add_item).setOnClickListener {
-            // 품목 추가 버튼 클릭 시 테이블에 등록
             if (predictionResult?.predictedClassLabel != null) {
                 addMatchingItemsToRecyclerView()
             } else {
                 Toast.makeText(requireContext(), "먼저 이미지를 등록하세요.", Toast.LENGTH_SHORT).show()
-                Log.d("lsy", "결과값"+predictionResult)
             }
         }
 
@@ -271,7 +264,7 @@ class ProductFragment : Fragment() {
     }
     // 아이템 목록을 서버에서 가져오는 함수
     private fun getAllItemsFromServer() {
-        GlobalScope.launch(Dispatchers.IO) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val response = networkService.getAllItems().execute()
                 if (response.isSuccessful) {
@@ -293,11 +286,10 @@ class ProductFragment : Fragment() {
     // 아이템 목록을 테이블에 추가하는 함수
     private fun addMatchingItemsToRecyclerView() {
         val predictedLabel = predictionResult?.predictedClassLabel
-
-        // 분류 결과와 일치하는 아이템만 RecyclerView에 추가
         val matchingItems = itemDTOList.filter { it.iname == predictedLabel }
+
         if (matchingItems.isNotEmpty()) {
-            itemAdapter.notifyDataSetChanged() // 어댑터에 데이터 변경 알림
+            itemAdapter.submitList(matchingItems)  // 어댑터에 필터링된 목록 전달
         }
     }
     // 테이블에서 아이템을 삭제하는 함수
@@ -311,12 +303,15 @@ class ProductFragment : Fragment() {
     }
 
 
+
     // 이미지 처리 후, 서버로 전송하는 함수
     private fun processImage(uri: Uri) {
-        GlobalScope.launch(Dispatchers.IO) {
+        if (isUploading) return // 중복 업로드 방지
+        isUploading = true
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 // 비트맵 처리
-                val resizedBitmap = getResizedBitmap(uri, 200, 200)
+                val resizedBitmap = getResizedBitmap(uri, 300, 300)
                 val imageBytes = bitmapToByteArray(resizedBitmap)
                 val imageName = uri.lastPathSegment?.substringAfterLast("/")?.substringBeforeLast(".") ?: "default_image"
                 val profileImagePart = createMultipartBodyFromBytes(imageBytes, imageName)
@@ -330,13 +325,16 @@ class ProductFragment : Fragment() {
                         } else {
                             Log.e("Upload", "서버 오류: ${response.code()}")
                         }
+                        isUploading = false
                     }
 
                     override fun onFailure(call: Call<String>, t: Throwable) {
                         Log.e("Upload", "업로드 실패: ${t.message}")
+                        isUploading = false
                     }
                 })
             } catch (e: Exception) {
+                isUploading = false
                 e.printStackTrace()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "이미지 처리 중 오류 발생", Toast.LENGTH_SHORT).show()
@@ -347,7 +345,7 @@ class ProductFragment : Fragment() {
 
     // 이미지 ID를 기반으로 이미지 분류 요청 함수
     private fun classifyImage(uri: Uri) {
-        GlobalScope.launch(Dispatchers.IO) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val resizedBitmap = getResizedBitmap(uri, 300, 300)
                 val imageBytes = bitmapToByteArray(resizedBitmap)
@@ -359,6 +357,8 @@ class ProductFragment : Fragment() {
                     override fun onResponse(call: Call<PredictionResult>, response: Response<PredictionResult>) {
                         if (response.isSuccessful) {
                             predictionResult = response.body()
+                            showClassificationResultDialog(predictionResult?.predictedClassLabel ?: "Unknown")
+                        } else {
                             val resultText = """
                                 분류 결과 : ${predictionResult?.predictedClassLabel ?: "Unknown"}
                                 정확도 : ${formatToPercentage(predictionResult?.confidence ?: 0.0)}
@@ -367,21 +367,150 @@ class ProductFragment : Fragment() {
                             requireActivity().runOnUiThread {
                                 resultView.text = resultText
                                 Toast.makeText(requireContext(), "분류 완료", Toast.LENGTH_SHORT).show()
-                                Log.d("lsy", " 분류 결과 : ${predictionResult?.predictedClassLabel}")
-                                view?.findViewById<Button>(R.id.btn_add_item)?.isEnabled = true}
-                        } else {
-                            Log.e("Classify", "분류 서버 오류: ${response.code()}")
+                                Log.d("lsy", " 분류 결과 : ${predictionResult?.predictedClassLabel}") }
                         }
+                            Log.e("Classify", "분류 서버 오류: ${response.code()}")
+
                     }
 
                     override fun onFailure(call: Call<PredictionResult>, t: Throwable) {
                         Log.e("Classify", "분류 요청 실패: ${t.message}")
+                        requireActivity().runOnUiThread {
+                            Toast.makeText(
+                                requireContext(),
+                                "분류 실패: 다시 시도해주세요.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 })
             } catch (e: Exception) {
                 e.printStackTrace()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "이미지 분류 중 오류 발생", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+    // 분류 결과 팝업 표시
+    private fun showClassificationResultDialog(result: String) {
+        val dialog = BottomSheetDialog(requireContext())
+        val view = layoutInflater.inflate(R.layout.dialog_classification_result, null)
+
+        val resultTextView = view.findViewById<TextView>(R.id.resultTextView2)
+        resultTextView.text = "분류 결과: $result. 이 결과가 맞습니까?"
+
+        val yesButton = view.findViewById<Button>(R.id.yesButton)
+        val noButton = view.findViewById<Button>(R.id.noButton)
+
+        yesButton.setOnClickListener {
+            addMatchingItemsToRecyclerView()
+            dialog.dismiss()
+        }
+
+        noButton.setOnClickListener {
+            showSelectionButtons()
+            dialog.dismiss()
+        }
+
+        dialog.setContentView(view)
+        dialog.show()
+    }
+    // '아니요' 선택 후 6개의 이미지 버튼을 출력하는 함수
+    private fun showSelectionButtons() {
+        val selectionDialog = BottomSheetDialog(requireContext())
+        val view = layoutInflater.inflate(R.layout.dialog_item_selection, null)
+
+        // 6개의 이미지 버튼
+        val fridgeButton = view.findViewById<ImageButton>(R.id.btn_refrigerator2)
+        val airConditionerButton = view.findViewById<ImageButton>(R.id.btn_air_conditioner2)
+        val computerButton = view.findViewById<ImageButton>(R.id.btn_computer2)
+        val tvButton = view.findViewById<ImageButton>(R.id.btn_tv2)
+        val ovenButton = view.findViewById<ImageButton>(R.id.btn_oven2)
+        val washingMachineButton = view.findViewById<ImageButton>(R.id.btn_washing_machine2)
+
+        // 각 버튼 클릭 이벤트 설정
+        fridgeButton.setOnClickListener {
+            showSubItemSelectionDialog("냉장고")
+            selectionDialog.dismiss()
+        }
+
+        airConditionerButton.setOnClickListener {
+            showSubItemSelectionDialog("에어컨")
+            selectionDialog.dismiss()
+        }
+
+        computerButton.setOnClickListener {
+            showSubItemSelectionDialog("컴퓨터(부품)")
+            selectionDialog.dismiss()
+        }
+
+        // 나머지 버튼들은 바로 해당 제품의 정보를 가져와 등록
+        tvButton.setOnClickListener {
+            fetchAndDisplayItem("TV")
+            selectionDialog.dismiss()
+        }
+
+        ovenButton.setOnClickListener {
+            fetchAndDisplayItem("전자레인지")
+            selectionDialog.dismiss()
+        }
+
+        washingMachineButton.setOnClickListener {
+            fetchAndDisplayItem("세탁기")
+            selectionDialog.dismiss()
+        }
+
+        selectionDialog.setContentView(view)
+        selectionDialog.show()
+    }
+
+    // 하위 항목을 선택할 수 있는 다이얼로그
+    private fun showSubItemSelectionDialog(itemCategory: String) {
+        val subItemDialog = BottomSheetDialog(requireContext())
+        val view = layoutInflater.inflate(R.layout.dialog_sub_item_selection, null)
+        val listView = view.findViewById<ListView>(R.id.listView)
+
+        // 예시 하위 항목 데이터 설정
+        val subItems = when (itemCategory) {
+            "냉장고" -> listOf("양문형 냉장고", "일반 냉장고", "미니 냉장고")
+            "에어컨" -> listOf("스탠드 에어컨", "벽걸이 에어컨", "창문형 에어컨")
+            "컴퓨터(부품)" -> listOf("CPU", "GPU", "RAM")
+            else -> emptyList()
+        }
+
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, subItems)
+        listView.adapter = adapter
+
+        // 하위 항목 선택 시
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val selectedSubItem = subItems[position]
+            fetchAndDisplayItem(selectedSubItem)  // 선택된 하위 항목에 맞는 제품 정보 가져오기
+            subItemDialog.dismiss()
+        }
+
+        subItemDialog.setContentView(view)
+        subItemDialog.show()
+    }
+
+    // 제품 정보 가져오기
+    private fun fetchAndDisplayItem(iname: String) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val response = networkService.getAllItems().execute()
+                if (response.isSuccessful) {
+                    val itemDTOList = response.body() ?: return@launch
+                    val matchingItems = itemDTOList.filter { it.iname == iname }
+                    if (matchingItems.isNotEmpty()) {
+                        withContext(Dispatchers.Main) {
+                            itemAdapter.submitList(matchingItems)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "아이템 목록을 불러오는 중 오류 발생", Toast.LENGTH_SHORT).show()
                 }
             }
         }

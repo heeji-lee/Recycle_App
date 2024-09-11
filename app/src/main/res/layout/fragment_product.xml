@@ -31,7 +31,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:layout_marginRight="100dp">
+                    android:layout_marginEnd="100dp">
 
                     <ImageButton
                         android:id="@+id/btn_washing_machine"
@@ -81,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:layout_marginRight="100dp">
+                    android:layout_marginEnd="100dp">
 
                     <ImageButton
                         android:id="@+id/btn_air_conditioner"
@@ -131,7 +131,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:layout_marginRight="100dp">
+                    android:layout_marginEnd="100dp">
 
                     <ImageButton
                         android:id="@+id/btn_computer"
@@ -210,12 +210,14 @@
                     android:layout_marginStart="16dp"
                     android:backgroundTint="@color/btn"/>
             </LinearLayout>
-            <!-- 추가된 아이템을 보여주는 테이블 레이아웃 -->
+
+            <!-- 추가된 아이템을 보여주는 리사이클러뷰 -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:scrollbars="vertical"
                 tools:listitem="@layout/item_row_layout" />
 
         </LinearLayout>

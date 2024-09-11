@@ -1,0 +1,45 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+
+    <ImageButton
+        android:id="@+id/btn_washing_machine2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/washing_machine" />
+    <ImageButton
+        android:id="@+id/btn_refrigerator2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/refrigerator" />
+
+    <ImageButton
+        android:id="@+id/btn_air_conditioner2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/air_conditioner" />
+
+    <ImageButton
+        android:id="@+id/btn_tv2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/tv" />
+    <ImageButton
+        android:id="@+id/btn_computer2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/ram" />
+    <ImageButton
+        android:id="@+id/btn_oven2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/oven" />
+
+
+
+    <!-- 나머지 이미지 버튼도 추가 -->
+
+</LinearLayout>

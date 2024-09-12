@@ -5,4 +5,6 @@
     <string name="item_status_processing">처리중</string>
     <string name="item_status_collecting">수거중</string>
     <string name="item_status_completed">수거완료</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

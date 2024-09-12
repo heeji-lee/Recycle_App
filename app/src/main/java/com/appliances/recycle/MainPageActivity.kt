@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.Button
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.fragment.app.Fragment
 
@@ -12,20 +13,6 @@ class MainPageActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_page)
-
-//        // 수거신청 버튼 클릭 시 ProductActivity로 이동
-//        val requestPickupButton: Button = findViewById(R.id.btnRequestPickup)
-//        requestPickupButton.setOnClickListener {
-//            val intent = Intent(this, ProductActivity::class.java)
-//            startActivity(intent)
-//        }
-//
-//        // 공지사항 버튼 클릭 시 NoticeListActivity로 이동
-//        val noticeButton: Button = findViewById(R.id.btnNotice)
-//        noticeButton.setOnClickListener {
-//            val intent = Intent(this, NoticeListActivity::class.java)
-//            startActivity(intent)
-//        }
 
         // 처음 액티비티가 시작될 때 기본 프래그먼트 설정 (홈 화면)
         if (savedInstanceState == null) {
@@ -40,8 +27,10 @@ class MainPageActivity : BaseActivity() {
             var selectedFragment: Fragment? = null
             when (item.itemId) {
                 R.id.navigation_home -> selectedFragment = HomeFragment()  // 홈 프래그먼트
+                R.id.navigation_pickup -> selectedFragment = ProductListFragment() // 수거현황 프래그먼트
                 R.id.navigation_camera -> selectedFragment = ProductFragment() // 카메라 프래그먼트
                 R.id.navigation_alert -> selectedFragment = NoticeListFragment()  // 공지사항 프래그먼트
+                // 마이페이지 프래그먼트
             }
             if (selectedFragment != null) {
                 supportFragmentManager.beginTransaction()
@@ -62,4 +51,5 @@ class MainPageActivity : BaseActivity() {
             }
         }
     }
+
 }

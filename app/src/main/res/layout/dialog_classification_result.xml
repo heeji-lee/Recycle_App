@@ -24,7 +24,7 @@
         android:text="예"
         android:layout_marginBottom="8dp"
         android:textColor="@android:color/white"
-        android:backgroundTint="?attr/colorPrimary" />
+        android:backgroundTint="@color/btn" />
 
     <!-- "아니요" 버튼 -->
     <Button
@@ -32,6 +32,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="아니요"
-        android:textColor="@android:color/white"
-        android:backgroundTint="?attr/colorAccent" />
+        android:textColor="@android:color/white" />
 </LinearLayout>

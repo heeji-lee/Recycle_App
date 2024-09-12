@@ -65,7 +65,6 @@
 
                     <!-- 수거 예정일 텍스트 -->
                     <TextView
-                        android:id="@+id/collection_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="수거 예정일"
@@ -73,10 +72,10 @@
 
                     <!-- 예약 날짜 텍스트 -->
                     <TextView
-                        android:id="@+id/reservation_date"
+                        android:id="@+id/collection_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="yyyy-mm-dd"
+                        android:text="수거일을 선택해주세요."
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -110,14 +109,7 @@
                         android:id="@+id/member_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="신청인"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/member_phone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="휴대전화"
+                        android:text="하기싫다"
                         android:textSize="16sp" />
 
                     <TextView
@@ -126,6 +118,14 @@
                         android:layout_height="wrap_content"
                         android:text="주소임 아무튼 주소임"
                         android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/member_phone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="010-1234-5678"
+                        android:textSize="16sp" />
+
                 </LinearLayout>
 
                 <Button

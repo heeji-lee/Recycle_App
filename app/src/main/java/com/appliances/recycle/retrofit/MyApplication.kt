@@ -8,6 +8,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 class MyApplication : Application(){
 
@@ -16,7 +17,7 @@ class MyApplication : Application(){
     private lateinit var apiService: INetworkService
 
     // http 퍼미션 허용 및, 로컬호스트 안될시 아이피로 확인 하기.
-    val BASE_URL = "http://192.168.125.67:8080"
+    val BASE_URL = "http://10.100.201.12:8080"
 
     //add....................................
     var networkService: INetworkService
@@ -27,6 +28,9 @@ class MyApplication : Application(){
 
     val client = OkHttpClient.Builder()
         .addInterceptor(logging)
+        .connectTimeout(30, TimeUnit.SECONDS)  // 연결 타임아웃 30초로 설정
+        .writeTimeout(30, TimeUnit.SECONDS)    // 쓰기 타임아웃 30초로 설정
+        .readTimeout(30, TimeUnit.SECONDS)     // 읽기 타임아웃 30초로 설정
         .build()
     val gson = GsonBuilder()
         .setLenient()

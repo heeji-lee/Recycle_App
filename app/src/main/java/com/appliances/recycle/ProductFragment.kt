@@ -229,7 +229,7 @@ class ProductFragment : Fragment() {
         imageView = view.findViewById(R.id.btn_photo)
         resultView = view.findViewById(R.id.predict_result_view)
 
-        itemAdapter = ItemAdapter(itemDTOList) { item -> deleteItem(item) }
+        itemAdapter = ItemAdapter(itemDTOList, { item -> deleteItem(item) }, requireContext())
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = itemAdapter
 
@@ -253,19 +253,6 @@ class ProductFragment : Fragment() {
         }
 
 
-//        view.findViewById<Button>(R.id.btn_add_item).setOnClickListener {
-//            if (predictionResult?.predictedClassLabel != null) {
-//                addMatchingItemsToRecyclerView()
-//            } else {
-//                Toast.makeText(requireContext(), "먼저 이미지를 등록하세요.", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//
-//        view.findViewById<Button>(R.id.btn_cancel).setOnClickListener {
-//            // 테이블에서 모든 아이템 삭제
-//            clearItems()
-//            Toast.makeText(requireContext(), "모든 항목이 취소되었습니다.", Toast.LENGTH_SHORT).show()
-//        }
 
         // 아이템 목록 불러오기
         getAllItemsFromServer()
@@ -295,20 +282,31 @@ class ProductFragment : Fragment() {
     private fun addMatchingItemsToRecyclerView() {
         val predictedLabel = predictionResult?.predictedClassLabel
         val matchingItems = itemDTOList.filter { it.iname == predictedLabel }
+        Log.d("lsy", "matchingItems: $matchingItems")
 
-        if (matchingItems.isNotEmpty()) {
-            itemAdapter.submitList(matchingItems)  // 어댑터에 필터링된 목록 전달
+        // 어댑터의 현재 아이템 리스트를 가져옴
+        val currentItems = itemAdapter.items.toMutableList() // 현재 리스트를 mutable 리스트로 변환
+        Log.d("lsy", "아이템리스트+${currentItems}")
+
+        // 기존 필터링을 제거하여 중복된 항목도 추가되도록 처리
+        val newItems: MutableList<ItemDTO> = matchingItems.toMutableList()
+        Log.d("lsy", "필터링+${newItems}")
+
+        if (newItems.isNotEmpty()) {
+            // 기존 리스트에 새 아이템을 추가 (중복을 고려하지 않음)
+            currentItems.addAll(newItems)
+            Log.d("lsy", "필터링+${currentItems}")
+
+            // 어댑터에 업데이트된 리스트 전달
+            itemAdapter.submitList(currentItems.toMutableList()) // submitList로 업데이트된 리스트 전달
+            Log.d("lsy", "필터링+${itemAdapter}")
         }
     }
     // 테이블에서 아이템을 삭제하는 함수
     private fun deleteItem(item: ItemDTO) {
         itemAdapter.deleteItem(item) // 어댑터에서 아이템 삭제
     }
-    private fun clearItems() {
-        itemDTOList.clear() // 아이템 목록 초기화
-        itemAdapter.notifyDataSetChanged() // RecyclerView 갱신
-        Toast.makeText(requireContext(), "모든 항목이 취소되었습니다.", Toast.LENGTH_SHORT).show()
-    }
+
 
 
 
@@ -428,101 +426,12 @@ class ProductFragment : Fragment() {
     private fun showSelectionButtons() {
         val selectionDialog = BottomSheetDialog(requireContext())
         val view = layoutInflater.inflate(R.layout.dialog_item_selection, null)
-
-        // 6개의 이미지 버튼
-//        val fridgeButton = view.findViewById<ImageButton>(R.id.btn_refrigerator2)
-//        val airConditionerButton = view.findViewById<ImageButton>(R.id.btn_air_conditioner2)
-//        val computerButton = view.findViewById<ImageButton>(R.id.btn_computer2)
-//        val tvButton = view.findViewById<ImageButton>(R.id.btn_tv2)
-//        val ovenButton = view.findViewById<ImageButton>(R.id.btn_oven2)
-//        val washingMachineButton = view.findViewById<ImageButton>(R.id.btn_washing_machine2)
-//
-//        // 각 버튼 클릭 이벤트 설정
-//        fridgeButton.setOnClickListener {
-//            showSubItemSelectionDialog("냉장고")
-//            selectionDialog.dismiss()
-//        }
-//
-//        airConditionerButton.setOnClickListener {
-//            showSubItemSelectionDialog("에어컨")
-//            selectionDialog.dismiss()
-//        }
-//
-//        computerButton.setOnClickListener {
-//            showSubItemSelectionDialog("컴퓨터(부품)")
-//            selectionDialog.dismiss()
-//        }
-//
-//        // 나머지 버튼들은 바로 해당 제품의 정보를 가져와 등록
-//        tvButton.setOnClickListener {
-//            fetchAndDisplayItem("TV")
-//            selectionDialog.dismiss()
-//        }
-//
-//        ovenButton.setOnClickListener {
-//            fetchAndDisplayItem("전자레인지")
-//            selectionDialog.dismiss()
-//        }
-//
-//        washingMachineButton.setOnClickListener {
-//            fetchAndDisplayItem("세탁기")
-//            selectionDialog.dismiss()
-//        }
-
         selectionDialog.setContentView(view)
         selectionDialog.show()
     }
 
-    // 하위 항목을 선택할 수 있는 다이얼로그
-    private fun showSubItemSelectionDialog(itemCategory: String) {
-        val subItemDialog = BottomSheetDialog(requireContext())
-        val view = layoutInflater.inflate(R.layout.dialog_sub_item_selection, null)
-        val listView = view.findViewById<ListView>(R.id.listView)
 
-        // 예시 하위 항목 데이터 설정
-        val subItems = when (itemCategory) {
-            "냉장고" -> listOf("양문형 냉장고", "일반 냉장고", "미니 냉장고")
-            "에어컨" -> listOf("스탠드 에어컨", "벽걸이 에어컨", "창문형 에어컨")
-            "컴퓨터(부품)" -> listOf("CPU", "GPU", "RAM")
-            else -> emptyList()
-        }
 
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, subItems)
-        listView.adapter = adapter
-
-        // 하위 항목 선택 시
-        listView.setOnItemClickListener { _, _, position, _ ->
-            val selectedSubItem = subItems[position]
-            fetchAndDisplayItem(selectedSubItem)  // 선택된 하위 항목에 맞는 제품 정보 가져오기
-            subItemDialog.dismiss()
-        }
-
-        subItemDialog.setContentView(view)
-        subItemDialog.show()
-    }
-
-    // 제품 정보 가져오기
-    private fun fetchAndDisplayItem(iname: String) {
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val response = networkService.getAllItems().execute()
-                if (response.isSuccessful) {
-                    val itemDTOList = response.body() ?: return@launch
-                    val matchingItems = itemDTOList.filter { it.iname == iname }
-                    if (matchingItems.isNotEmpty()) {
-                        withContext(Dispatchers.Main) {
-                            itemAdapter.submitList(matchingItems)
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "아이템 목록을 불러오는 중 오류 발생", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
 
     private fun createMultipartBodyFromBytes(imageBytes: ByteArray, imageName: String): MultipartBody.Part {
         val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), imageBytes)

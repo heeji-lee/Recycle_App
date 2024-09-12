@@ -1,141 +1,154 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/resv"
+    android:background="#FFFFFF"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- 툴바 (뒤로가기 버튼 포함, 제목 숨김) -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="#E0E0E0"
-        android:padding="16dp"
-        android:id="@+id/layout_product_info"
-        android:paddingTop="16dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:layout_marginBottom="16dp">
+        android:theme="@style/CustomToolbar"
+        app:navigationIcon="@drawable/ic_arrow_left" />
 
-        <TextView
-            android:id="@+id/text_product_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="상품 이름"
-            android:textSize="16sp"
-            android:paddingBottom="8dp"/>
-
-        <TextView
-            android:id="@+id/text_quantity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="수량"
-            android:textSize="16sp"/>
-    </LinearLayout>
-
-    <LinearLayout
+    <!-- 전체 내용을 스크롤할 수 있게 ScrollView 사용 -->
+    <ScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#E0E0E0"
-        android:padding="16dp"
-        android:id="@+id/layout_reservation_date"
-        android:layout_below="@id/layout_product_info"
-        android:layout_marginBottom="16dp">
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:layout_above="@id/btn_submit">
 
-        <TextView
-        android:id="@+id/text_reservation_date"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="yyyy-mm-dd"
-        android:textSize="16sp"/>
+        <!-- 스크롤 가능한 LinearLayout -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-        <Button
-        android:id="@+id/btn_edit_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="변경"/>
+            <!-- 상품 정보 영역 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#F0F0F0"
+
+                android:id="@+id/layout_product_info"
+                android:layout_marginBottom="16dp">
+
+                <!-- 추가된 아이템을 보여주는 리사이클러뷰 -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="vertical"
+                    tools:listitem="@layout/item_row_layout" />
+
+            </LinearLayout>
+
+            <!-- 예약 날짜 영역 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="#F0F0F0"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <!-- 수거 예정일 텍스트 -->
+                    <TextView
+                        android:id="@+id/collection_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="수거 예정일"
+                        android:textSize="16sp" />
+
+                    <!-- 예약 날짜 텍스트 -->
+                    <TextView
+                        android:id="@+id/reservation_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="yyyy-mm-dd"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <!-- 오른쪽에 선택 버튼 -->
+                <Button
+                    android:id="@+id/btn_select_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/btn"
+                    android:textColor="@android:color/white"
+                    android:text="선택" />
+
             </LinearLayout>
 
             <!-- 수거 정보 영역 -->
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="#E0E0E0"
-        android:padding="16dp"
-        android:id="@+id/layout_collection_info"
-        android:layout_below="@id/layout_reservation_date"
-        android:layout_marginBottom="16dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="#F0F0F0"
+                android:padding="16dp"
+                android:gravity="center_vertical">
 
-        <TextView
-        android:id="@+id/text_address"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="주소"
-        android:textSize="16sp"
-        android:paddingBottom="8dp"/>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-        <TextView
-        android:id="@+id/text_request_details"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="수거 요청사항"
-        android:textSize="16sp"/>
+                    <TextView
+                        android:id="@+id/member_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="신청인"
+                        android:textSize="16sp" />
 
-        <Button
-        android:id="@+id/btn_edit_collection_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="변경"/>
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/member_phone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="휴대전화"
+                        android:textSize="16sp" />
 
-    <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="#E0E0E0"
-    android:padding="16dp"
-    android:id="@+id/layout_collection_method"
-    android:layout_below="@id/layout_collection_info"
-    android:layout_marginBottom="16dp">
+                    <TextView
+                        android:id="@+id/address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="주소임 아무튼 주소임"
+                        android:textSize="16sp" />
+                </LinearLayout>
 
-        <RadioGroup
-        android:id="@+id/radio_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+                <Button
+                    android:id="@+id/btn_edit_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/btn"
+                    android:textColor="@android:color/white"
+                    android:text="변경" />
 
-        <RadioButton
-            android:id="@+id/radio_method1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="수거방식1"/>
+            </LinearLayout>
 
-        <RadioButton
-            android:id="@+id/radio_method2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="수거방식2"/>
-        </RadioGroup>
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
+    <!-- 수거 신청하기 버튼을 맨 아래에 고정 -->
     <Button
-    android:id="@+id/btn_submit"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="수거 신청하기"
-    android:background="#2196F3"
-    android:textColor="@android:color/white"
-    android:layout_below="@id/layout_collection_method"/>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+        android:id="@+id/btn_submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_navigation_menu" />
+        android:text="수거 신청하기"
+        android:backgroundTint="@color/btn"
+        android:textColor="@android:color/white"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

@@ -1,5 +1,7 @@
 package com.appliances.recycle.adapter
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +12,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.appliances.recycle.R
 import com.appliances.recycle.dto.ItemDTO
 import com.bumptech.glide.Glide
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
-class ItemAdapter(private val items: MutableList<ItemDTO>, private val onDeleteClick: (ItemDTO) -> Unit) :
+class ItemAdapter(val items: MutableList<ItemDTO>, private val onDeleteClick: (ItemDTO) -> Unit, private val context: Context // SharedPreferences를 사용하기 위한 Context
+) :
     RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+    private val sharedPrefs: SharedPreferences =
+        context.getSharedPreferences("my_app_prefs", Context.MODE_PRIVATE)
 
     class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.productImage)
@@ -45,11 +52,34 @@ class ItemAdapter(private val items: MutableList<ItemDTO>, private val onDeleteC
     override fun getItemCount(): Int {
         return items.size
     }
-    fun submitList(newItems: List<ItemDTO>) {
-        items.clear()
-        items.addAll(newItems)
+    fun submitList(newItems: MutableList<ItemDTO>) {
+        newItems.forEach { newItem ->
+            items.add(newItem) }
+        // 리스트가 변경된 후 SharedPreferences에 저장
+        saveItemsToSharedPrefs(items)
         notifyDataSetChanged()
     }
+    // SharedPreferences에 리스트 저장
+    private fun saveItemsToSharedPrefs(items: List<ItemDTO>) {
+        val gson = Gson()
+        val jsonString = gson.toJson(items) // 리스트를 JSON 문자열로 변환
+        with(sharedPrefs.edit()) {
+            putString("items_key", jsonString)
+            apply() // SharedPreferences에 저장
+        }
+    }
+
+    // SharedPreferences에서 리스트를 불러오는 함수
+    fun loadItemsFromSharedPrefs(): List<ItemDTO> {
+        val jsonString = sharedPrefs.getString("items_key", null)
+        return if (jsonString != null) {
+            val type = object : TypeToken<List<ItemDTO>>() {}.type
+            Gson().fromJson(jsonString, type) // JSON 문자열을 리스트로 변환
+        } else {
+            mutableListOf() // SharedPreferences에 값이 없을 경우 빈 리스트 반환
+        }
+    }
+
 
     // 아이템을 삭제하는 함수
     fun deleteItem(item: ItemDTO) {

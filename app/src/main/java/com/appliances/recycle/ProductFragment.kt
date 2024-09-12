@@ -69,7 +69,7 @@ class ProductFragment : Fragment() {
     private var predictionResult: PredictionResult? = null  // 변수를 클래스 멤버로 선언
     private var isUploading = false  // 중복 업로드 방지
 
-        private val REQUEST_PERMISSION = 1001
+    private val REQUEST_PERMISSION = 1001
     private lateinit var cameraImageUri: Uri
     private var actionAfterPermission: (() -> Unit)? = null // 권한 후에 실행할 액션 저장
     private var itemDTOList: MutableList<ItemDTO> = mutableListOf() // 서버에서 받아온 아이템 목록을 저장할 리스트
@@ -215,6 +215,7 @@ class ProductFragment : Fragment() {
         val binding = FragmentProductBinding.inflate(inflater, container, false)
         // 테이블 레이아웃 초기화
         recyclerView = binding.recyclerView
+
         return binding.root
     }
 
@@ -231,6 +232,13 @@ class ProductFragment : Fragment() {
         itemAdapter = ItemAdapter(itemDTOList) { item -> deleteItem(item) }
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = itemAdapter
+
+        // 주문하기 버튼 클릭 시 ReservationDetailActivity로 이동
+        val orderButton: Button = view.findViewById(R.id.btn_order)
+        orderButton.setOnClickListener {
+            val intent = Intent(requireContext(), ReservationDetailActivity::class.java)
+            startActivity(intent)  // ReservationDetailActivity로 이동
+        }
 
         // 권한 확인
         checkPermissions{}

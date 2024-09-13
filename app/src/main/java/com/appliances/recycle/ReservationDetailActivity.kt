@@ -35,6 +35,9 @@ class ReservationDetailActivity : AppCompatActivity() {
     private lateinit var textMemberName: TextView
     private lateinit var textMemberPhone: TextView
     private lateinit var textAddress: TextView
+    private lateinit var editMemberName: EditText
+    private lateinit var editMemberPhone: EditText
+    private lateinit var editAddress: EditText
     private lateinit var btnSelectDate: Button
     private lateinit var btnEditAddress: Button
 
@@ -44,7 +47,12 @@ class ReservationDetailActivity : AppCompatActivity() {
 
         // View 초기화
         textCollectionDate = findViewById(R.id.collection_date)
-        textAddress = findViewById(R.id.address)
+        textMemberName = findViewById(R.id.member_name)
+        textMemberPhone = findViewById(R.id.member_phone)
+        textAddress = findViewById(R.id.member_address)
+        editMemberName = findViewById(R.id.edit_member_name)
+        editMemberPhone = findViewById(R.id.edit_member_phone)
+        editAddress = findViewById(R.id.edit_address)
         btnSelectDate = findViewById(R.id.btn_select_date)
         btnEditAddress = findViewById(R.id.btn_edit_address)
 
@@ -87,8 +95,29 @@ class ReservationDetailActivity : AppCompatActivity() {
 
         // 수거 정보 수정 버튼 클릭 이벤트
         btnEditAddress.setOnClickListener {
+            // TextView 숨기기
+            textMemberName.visibility = View.GONE
+            textAddress.visibility = View.GONE
+            textMemberPhone.visibility = View.GONE
 
+            // EditText 보이기
+            editMemberName.visibility = View.VISIBLE
+            editAddress.visibility = View.VISIBLE
+            editMemberPhone.visibility = View.VISIBLE
+
+            // 기존 TextView의 값을 EditText에 복사
+            editMemberName.setText(textMemberName.text)
+            editAddress.setText(textAddress.text)
+            editMemberPhone.setText(textMemberPhone.text)
+
+//            val itemDTO = loadItemDTOFromDB()
+//
+//            // 멤버 이름, 전화번호, 주소 등을 TextView에 설정
+//            textMemberName.text = itemDTO?.memberName ?: "이름 없음"
+//            textMemberPhone.text = itemDTO?.memberPhone ?: "전화번호 없음"
+//            textAddress.text = itemDTO?.memberAddress ?: "주소 없음"
         }
+
     }
 
 }

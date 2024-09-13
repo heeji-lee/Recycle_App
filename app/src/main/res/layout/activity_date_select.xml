@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="0dp">  <!-- padding을 제거 -->
+
+    <!-- 상단의 "일정 선택" 문구 -->
+    <TextView
+        android:id="@+id/tvSelectSchedule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="일정 선택"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="110dp" />
+
+    <!-- 양쪽 화살표와 연/월 텍스트를 포함하는 LinearLayout -->
+    <LinearLayout
+        android:id="@+id/layoutMonthNavigation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvSelectSchedule"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageButton
+            android:id="@+id/btnPrevMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_left"
+            android:background="@null"
+            android:contentDescription="Previous Month" />
+
+        <TextView
+            android:id="@+id/tvMonthYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2024년 8월"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp" />
+
+        <ImageButton
+            android:id="@+id/btnNextMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_right"
+            android:background="@null"
+            android:contentDescription="Next Month" />
+
+    </LinearLayout>
+
+    <!-- 달력 뷰 -->
+
+    <!-- 하단의 취소 및 선택 버튼 -->
+    <CalendarView
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layoutMonthNavigation"
+        android:layout_marginTop="65dp" />
+
+    <!-- 하단의 BottomNavigationView -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottom_navigation"
+        android:layout_marginBottom="50dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/btn"
+            android:text="취소" />
+
+        <Button
+            android:id="@+id/btnSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:backgroundTint="@color/btn"
+            android:text="선택" />
+
+    </LinearLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="?android:attr/windowBackground"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_navigation_menu"
+        android:elevation="8dp" />  <!-- 필요에 따라 여백 없이 표시되도록 설정 -->
+
+</RelativeLayout>

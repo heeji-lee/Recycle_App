@@ -5,4 +5,5 @@
     <color name="light_blue">#87CEEB</color>
     <color name="blue">#0000FF</color>
     <color name="logocolor">#48b8e7</color>
+    <color name="btn">#48b8e7</color>
 </resources>

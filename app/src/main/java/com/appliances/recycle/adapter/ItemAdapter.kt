@@ -20,6 +20,13 @@ class ItemAdapter(val items: MutableList<ItemDTO>, private val onDeleteClick: (I
     RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
     private val sharedPrefs: SharedPreferences =
         context.getSharedPreferences("my_app_prefs", Context.MODE_PRIVATE)
+    init {
+        // 어댑터가 생성될 때 SharedPreferences에서 저장된 데이터를 불러옴
+        val savedItems = loadItemsFromSharedPrefs()
+        if (savedItems.isNotEmpty()) {
+            items.addAll(savedItems)
+        }
+    }
 
     class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.productImage)
@@ -57,7 +64,6 @@ class ItemAdapter(val items: MutableList<ItemDTO>, private val onDeleteClick: (I
                 items.add(newItem) }
         // 리스트가 변경된 후 SharedPreferences에 저장
         saveItemsToSharedPrefs(items)
-
         notifyDataSetChanged()
     }
 

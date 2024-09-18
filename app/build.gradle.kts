@@ -4,6 +4,7 @@ plugins {
 
     //room (DB, JSON 의존성)
     id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+    id("kotlin-kapt")
 }
 
 android {
@@ -110,6 +111,10 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    // 추가 glide 관련 툴 .
+    kapt ("com.github.bumptech.glide:compiler:4.12.0")
+    implementation ("com.github.bumptech.glide:okhttp3-integration:4.12.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

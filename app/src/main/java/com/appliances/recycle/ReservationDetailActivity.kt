@@ -1,37 +1,29 @@
 package com.appliances.recycle
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
-import com.appliances.recycle.adapter.ItemAdapter
-import com.appliances.recycle.adapter.OrderItemAdapter
-import com.appliances.recycle.dto.ItemDTO
-import com.google.android.material.datepicker.MaterialDatePicker
+import com.appliances.recycle.dto.MemberDTO
+import com.appliances.recycle.retrofit.INetworkService
+import com.appliances.recycle.retrofit.MyApplication
+import com.appliances.recycle.viewModel.LoginViewModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.Calendar
 
 class ReservationDetailActivity : AppCompatActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
-//        setContentView(R.layout.activity_reservation_detail)
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.resv)) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-//            insets
-//        }
-//    }
+
+    private lateinit var networkService: INetworkService
 
     private lateinit var textCollectionDate: TextView
     private lateinit var textMemberName: TextView
@@ -46,6 +38,10 @@ class ReservationDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reservation_detail)
+
+        val myApplication = applicationContext as MyApplication
+        myApplication.initialize(this)
+        networkService = myApplication.getApiService()
 
         // View 초기화
         textCollectionDate = findViewById(R.id.collection_date)
@@ -95,7 +91,41 @@ class ReservationDetailActivity : AppCompatActivity() {
             datePickerDialog.show()
         }
 
+        editMemberPhone.addTextChangedListener(object : TextWatcher {
+            private var isFormatting: Boolean = false
+            private var prevLength: Int = 0
 
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                prevLength = s?.length ?: 0
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // 아무 동작하지 않음
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (isFormatting) return
+
+                isFormatting = true
+
+                s?.let {
+                    val digitsOnly = s.toString().replace(Regex("[^\\d]"), "") // 숫자만 필터링
+                    val formattedNumber = formatPhoneNumber(digitsOnly) // 포맷 적용
+                    s.replace(0, s.length, formattedNumber) // 포맷된 번호로 대체
+                }
+
+                isFormatting = false
+            }
+
+            // 전화번호 포맷 적용 (000-0000-0000 형식)
+            private fun formatPhoneNumber(digits: String): String {
+                return when {
+                    digits.length <= 3 -> digits // 3자리 이하일 때는 그대로 출력
+                    digits.length <= 7 -> "${digits.substring(0, 3)}-${digits.substring(3)}" // 000-0000
+                    else -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}" // 000-0000-0000
+                }
+            }
+        })
 
         // 정보 수정 버튼 클릭 이벤트
         btnEditInfo.setOnClickListener {
@@ -114,12 +144,35 @@ class ReservationDetailActivity : AppCompatActivity() {
             editAddress.setText(textAddress.text)
             editMemberPhone.setText(textMemberPhone.text)
 
-//            val itemDTO = loadItemDTOFromDB()
-//
-//            // 멤버 이름, 전화번호, 주소 등을 TextView에 설정
-//            textMemberName.text = itemDTO?.memberName ?: "이름 없음"
-//            textMemberPhone.text = itemDTO?.memberPhone ?: "전화번호 없음"
-//            textAddress.text = itemDTO?.memberAddress ?: "주소 없음"
+            networkService.getOrders().enqueue(object : Callback<MemberDTO> {
+                override fun onResponse(call: Call<MemberDTO>, response: Response<MemberDTO>) {
+                    if (response.isSuccessful) {
+                        val member = response.body()
+                        if (member != null) {
+                            Log.d("API", "User Info: ${member.mname}, ${member.address}, ${member.phone}")
+
+                            // UI 업데이트 (예시)
+                            textMemberName.text = member.mname ?: "이름 없음"
+                            textAddress.text = member.address ?: "주소 없음"
+                            textMemberPhone.text = member.phone ?: "전화번호 없음"
+                        } else {
+                            Log.e("API", "Received empty body")
+                        }
+                    } else {
+                        val errorMessage = response.errorBody()?.string()
+                        Log.e("API", "Failed to retrieve data: $errorMessage")
+                        when (response.code()) {
+                            401 -> Log.e("API", "Unauthorized: 로그인 필요")
+                            404 -> Log.e("API", "User not found")
+                            else -> Log.e("API", "Unexpected error: ${response.code()}")
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<MemberDTO>, t: Throwable) {
+                    Log.e("API", "Network request failed: ${t.message}")
+                }
+            })
         }
 
     }

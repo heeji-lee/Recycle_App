@@ -99,78 +99,71 @@
                 android:padding="16dp"
                 android:gravity="center_vertical">
 
-<!--                <LinearLayout-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:orientation="vertical">-->
+                <TextView
+                    android:id="@+id/member_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="하기싫다"
+                    android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/member_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="하기싫다"
-                        android:textSize="16sp" />
+                <EditText
+                    android:id="@+id/edit_member_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="이름을 입력하세요"
+                    android:background="@drawable/edittext_background"
+                    android:layout_marginBottom="5dp"
+                    android:padding="12dp"
+                    android:visibility="gone"
+                    android:textSize="16sp" />
 
-                    <EditText
-                        android:id="@+id/edit_member_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="이름을 입력하세요"
-                        android:background="@drawable/edittext_background"
-                        android:layout_marginBottom="5dp"
-                        android:padding="12dp"
-                        android:visibility="gone"
-                        android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/member_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="주소임 아무튼 주소임"
+                    android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/member_address"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="주소임 아무튼 주소임"
-                        android:textSize="16sp" />
+                <EditText
+                    android:id="@+id/edit_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_background"
+                    android:layout_marginBottom="5dp"
+                    android:padding="12dp"
+                    android:hint="주소를 입력하세요"
+                    android:visibility="gone"
+                    android:textSize="16sp" />
 
-                    <EditText
-                        android:id="@+id/edit_address"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/edittext_background"
-                        android:layout_marginBottom="5dp"
-                        android:padding="12dp"
-                        android:hint="주소를 입력하세요"
-                        android:visibility="gone"
-                        android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/member_phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="12dp"
+                    android:text="010-1234-5678"
+                    android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/member_phone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="010-1234-5678"
-                        android:textSize="16sp" />
-
-                    <EditText
-                        android:id="@+id/edit_member_phone"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/edittext_background"
-                        android:padding="12dp"
-                        android:hint="전화번호를 입력하세요"
-                        android:visibility="gone"
-                        android:inputType="phone"
-                        android:textSize="16sp" />
-
-                </LinearLayout>
+                <EditText
+                    android:id="@+id/edit_member_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_background"
+                    android:padding="12dp"
+                    android:hint="전화번호를 입력하세요"
+                    android:visibility="gone"
+                    android:inputType="phone"
+                    android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/btn_edit_info"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/btn"
                     android:background="@drawable/rounded_button_with_border"
                     android:textColor="@android:color/white"
                     android:text="변경" />
 
-<!--            </LinearLayout>-->
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

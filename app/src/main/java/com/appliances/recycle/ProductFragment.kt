@@ -59,6 +59,7 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
+import kotlin.math.log
 
 class ProductFragment : Fragment() {
 
@@ -106,7 +107,6 @@ class ProductFragment : Fragment() {
         }
     }
 
-
     // 권한 요청 결과 처리
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -119,6 +119,7 @@ class ProductFragment : Fragment() {
             }
         }
     }
+
     // 이미지 선택 후 처리하는 ActivityResultLauncher
     private val selectImageLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -195,7 +196,6 @@ class ProductFragment : Fragment() {
         selectImageLauncher.launch(intent)
     }
 
-
     // 이미지 파일 생성 (임시 파일 생성, 앱의 외부 저장소 저장)
     @Throws(IOException::class)
     private fun createImageFile(): File {
@@ -207,7 +207,6 @@ class ProductFragment : Fragment() {
             storageDir
         )
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -250,6 +249,7 @@ class ProductFragment : Fragment() {
 
         // ApplicationContext에서 네트워크 서비스 초기화
         val myApplication = requireActivity().applicationContext as MyApplication
+        myApplication.initialize(requireContext())
         networkService = myApplication.networkService  // 인증이 필요 없는 API 사용
 
         // 버튼 클릭 이벤트 설정
@@ -373,7 +373,7 @@ class ProductFragment : Fragment() {
                                 Toast.makeText(requireContext(), "분류 완료", Toast.LENGTH_SHORT).show()
                                 Log.d("lsy", " 분류 결과 : ${predictionResult?.predictedClassLabel}") }
                         }
-                            Log.e("Classify", "분류 서버 오류: ${response.code()}")
+                        Log.e("Classify", "분류 서버 오류: ${response.code()}")
 
                     }
 

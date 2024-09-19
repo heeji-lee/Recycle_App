@@ -42,6 +42,7 @@ class ReservationDetailActivity : AppCompatActivity() {
     private lateinit var editAddress: EditText
     private lateinit var btnSelectDate: Button
     private lateinit var btnEditInfo: Button
+    private lateinit var btnSubmit: Button
     private var isEditMode = false
     private lateinit var addressFinderLauncher: ActivityResultLauncher<Bundle>
 
@@ -71,6 +72,7 @@ class ReservationDetailActivity : AppCompatActivity() {
         editAddress = findViewById(R.id.edit_address)
         btnSelectDate = findViewById(R.id.btn_select_date)
         btnEditInfo = findViewById(R.id.btn_edit_info)
+        btnSubmit = findViewById(R.id.btn_submit)
 
         // DB에서 값 가져오기 (여기서는 예제로 하드코딩)
         textMemberName.text = name ?: "이름 없음"
@@ -235,6 +237,11 @@ class ReservationDetailActivity : AppCompatActivity() {
 
                 isEditMode = true
             }
+        }
+
+        btnSubmit.setOnClickListener {
+            val intent = Intent(this, PayActivity::class.java)
+            startActivity(intent)
         }
 
     }

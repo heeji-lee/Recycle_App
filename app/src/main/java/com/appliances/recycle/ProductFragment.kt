@@ -1,7 +1,9 @@
 package com.appliances.recycle
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
@@ -71,6 +73,7 @@ class ProductFragment : Fragment() {
     private var imageUri: Uri? = null  // Nullable URI
     private var predictionResult: PredictionResult? = null  // 변수를 클래스 멤버로 선언
     private var isUploading = false  // 중복 업로드 방지
+    private lateinit var sharedPreferences: SharedPreferences
 
     private val REQUEST_PERMISSION = 1001
     private lateinit var cameraImageUri: Uri
@@ -243,6 +246,8 @@ class ProductFragment : Fragment() {
             val intent = Intent(requireContext(), ReservationDetailActivity::class.java)
             startActivity(intent)  // ReservationDetailActivity로 이동
         }
+
+        sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
 
         // 권한 확인
         checkPermissions{}

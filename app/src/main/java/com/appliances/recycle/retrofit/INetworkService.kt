@@ -65,7 +65,7 @@ interface INetworkService {
     @GET("/api/getAllItems")
     fun getAllItems(): Call<MutableList<ItemDTO>> // 서버에서 아이템 목록을 가져오는 API
 
-    @GET("/echopickup/product/api/order")
+    @GET("/echopickup/product/order")
     fun getOrders(): Call<MemberDTO>
 
 //    @GET("/api/users/page")

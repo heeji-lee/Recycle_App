@@ -1,7 +1,9 @@
 package com.appliances.recycle
 
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,6 +14,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.appliances.recycle.dto.MemberDTO
 import com.appliances.recycle.retrofit.INetworkService
 import com.appliances.recycle.retrofit.MyApplication
@@ -24,6 +27,8 @@ import java.util.Calendar
 class ReservationDetailActivity : AppCompatActivity() {
 
     private lateinit var networkService: INetworkService
+    private lateinit var app_prefs: SharedPreferences
+    private lateinit var my_app_prefs: SharedPreferences
 
     private lateinit var textCollectionDate: TextView
     private lateinit var textMemberName: TextView
@@ -43,6 +48,14 @@ class ReservationDetailActivity : AppCompatActivity() {
         myApplication.initialize(this)
         networkService = myApplication.getApiService()
 
+        app_prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        my_app_prefs = getSharedPreferences("my_app_prefs", Context.MODE_PRIVATE)
+
+        // app_prefs에서 저장된 값 가져오기
+        val name = app_prefs.getString("name", "이름 없음")
+        val phone = app_prefs.getString("phone", "전화번호 없음")
+        val address = app_prefs.getString("address", "주소 없음")
+
         // View 초기화
         textCollectionDate = findViewById(R.id.collection_date)
         textMemberName = findViewById(R.id.member_name)
@@ -55,10 +68,9 @@ class ReservationDetailActivity : AppCompatActivity() {
         btnEditInfo = findViewById(R.id.btn_edit_info)
 
         // DB에서 값 가져오기 (여기서는 예제로 하드코딩)
-//        textCollectionDate.text =
-//        textMemberName =
-//        textAddress.text =
-//        textMemberPhone =
+        textMemberName.text = name ?: "이름 없음"
+        textAddress.text = address ?: "주소 없음"
+        textMemberPhone.text = phone ?: "전화번호 없음"
 
         // 예약 예정일 수정 버튼 클릭 이벤트
         btnSelectDate.setOnClickListener {

@@ -1,5 +1,6 @@
 package com.appliances.recycle
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
@@ -13,6 +14,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContentProviderCompat.requireContext
 import com.appliances.recycle.dto.MemberDTO
@@ -39,6 +42,8 @@ class ReservationDetailActivity : AppCompatActivity() {
     private lateinit var editAddress: EditText
     private lateinit var btnSelectDate: Button
     private lateinit var btnEditInfo: Button
+    private var isEditMode = false
+    private lateinit var addressFinderLauncher: ActivityResultLauncher<Bundle>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,9 +126,19 @@ class ReservationDetailActivity : AppCompatActivity() {
                 isFormatting = true
 
                 s?.let {
-                    val digitsOnly = s.toString().replace(Regex("[^\\d]"), "") // 숫자만 필터링
-                    val formattedNumber = formatPhoneNumber(digitsOnly) // 포맷 적용
-                    s.replace(0, s.length, formattedNumber) // 포맷된 번호로 대체
+                    // 숫자만 남기기
+                    val digitsOnly = s.toString().replace(Regex("[^\\d]"), "")
+
+                    // 11자리까지만 허용
+                    if (digitsOnly.length > 11) {
+                        s.delete(11, s.length)
+                        isFormatting = false
+                        return
+                    }
+
+                    // 전화번호 형식으로 포맷 적용
+                    val formattedNumber = formatPhoneNumber(digitsOnly)
+                    s.replace(0, s.length, formattedNumber)
                 }
 
                 isFormatting = false
@@ -139,52 +154,87 @@ class ReservationDetailActivity : AppCompatActivity() {
             }
         })
 
+        addressFinderLauncher = registerForActivityResult(AddressFinder.contract) { result ->
+            if (result != Bundle.EMPTY) {
+                // address와 zipcode 값을 받아온 후 처리
+                val address = result.getString(AddressFinder.ADDRESS)
+                val zipCode = result.getString(AddressFinder.ZIPCODE)
+                val editableText: Editable = Editable.Factory.getInstance().newEditable("[$zipCode] $address")
+                // 받은 데이터를 사용해 필요한 작업 수행
+                editAddress.text = editableText
+            }
+        }
+
         // 정보 수정 버튼 클릭 이벤트
         btnEditInfo.setOnClickListener {
-            // TextView 숨기기
-            textMemberName.visibility = View.GONE
-            textAddress.visibility = View.GONE
-            textMemberPhone.visibility = View.GONE
+            if (isEditMode) {
+                textMemberName.text = editMemberName.text
+                textAddress.text = editAddress.text
+                textMemberPhone.text = editMemberPhone.text
 
-            // EditText 보이기
-            editMemberName.visibility = View.VISIBLE
-            editAddress.visibility = View.VISIBLE
-            editMemberPhone.visibility = View.VISIBLE
+                // EditText 숨기기
+                editMemberName.visibility = View.GONE
+                editAddress.visibility = View.GONE
+                editMemberPhone.visibility = View.GONE
 
-            // 기존 TextView의 값을 EditText에 복사
-            editMemberName.setText(textMemberName.text)
-            editAddress.setText(textAddress.text)
-            editMemberPhone.setText(textMemberPhone.text)
+                // TextView 보이기
+                textMemberName.visibility = View.VISIBLE
+                textAddress.visibility = View.VISIBLE
+                textMemberPhone.visibility = View.VISIBLE
 
-            networkService.getOrders().enqueue(object : Callback<MemberDTO> {
-                override fun onResponse(call: Call<MemberDTO>, response: Response<MemberDTO>) {
-                    if (response.isSuccessful) {
-                        val member = response.body()
-                        if (member != null) {
-                            Log.d("API", "User Info: ${member.mname}, ${member.address}, ${member.phone}")
+                btnEditInfo.text = "수정"
 
-                            // UI 업데이트 (예시)
-                            textMemberName.text = member.mname ?: "이름 없음"
-                            textAddress.text = member.address ?: "주소 없음"
-                            textMemberPhone.text = member.phone ?: "전화번호 없음"
+                isEditMode = false
+
+                networkService.getOrders().enqueue(object : Callback<MemberDTO> {
+                    override fun onResponse(call: Call<MemberDTO>, response: Response<MemberDTO>) {
+                        if (response.isSuccessful) {
+                            val member = response.body()
+                            if (member != null) {
+                                Log.d("API", "User Info: ${member.mname}, ${member.address}, ${member.phone}")
+
+                                textMemberName.text = member.mname ?: "이름 없음"
+                                textAddress.text = member.address ?: "주소 없음"
+                                textMemberPhone.text = member.phone ?: "전화번호 없음"
+                            } else {
+                                Log.e("API", "Received empty body")
+                            }
                         } else {
-                            Log.e("API", "Received empty body")
-                        }
-                    } else {
-                        val errorMessage = response.errorBody()?.string()
-                        Log.e("API", "Failed to retrieve data: $errorMessage")
-                        when (response.code()) {
-                            401 -> Log.e("API", "Unauthorized: 로그인 필요")
-                            404 -> Log.e("API", "User not found")
-                            else -> Log.e("API", "Unexpected error: ${response.code()}")
+                            val errorMessage = response.errorBody()?.string()
+                            Log.e("API", "Failed to retrieve data: $errorMessage")
+                            when (response.code()) {
+                                401 -> Log.e("API", "Unauthorized: 로그인 필요")
+                                404 -> Log.e("API", "User not found")
+                                else -> Log.e("API", "Unexpected error: ${response.code()}")
+                            }
                         }
                     }
+
+                    override fun onFailure(call: Call<MemberDTO>, t: Throwable) {
+                        Log.e("API", "Network request failed: ${t.message}")
+                    }
+                })
+            } else {
+                editMemberName.setText(textMemberName.text)
+                editAddress.setText(textAddress.text)
+                editMemberPhone.setText(textMemberPhone.text)
+
+                textMemberName.visibility = View.GONE
+                textAddress.visibility = View.GONE
+                textMemberPhone.visibility = View.GONE
+
+                editMemberName.visibility = View.VISIBLE
+                editAddress.visibility = View.VISIBLE
+                editMemberPhone.visibility = View.VISIBLE
+
+                editAddress.setOnClickListener{
+                    addressFinderLauncher.launch(Bundle())
                 }
 
-                override fun onFailure(call: Call<MemberDTO>, t: Throwable) {
-                    Log.e("API", "Network request failed: ${t.message}")
-                }
-            })
+                btnEditInfo.text = "저장"
+
+                isEditMode = true
+            }
         }
 
     }

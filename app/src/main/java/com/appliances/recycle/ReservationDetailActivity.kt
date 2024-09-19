@@ -1,37 +1,37 @@
 package com.appliances.recycle
 
-import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
-import com.appliances.recycle.adapter.ItemAdapter
-import com.appliances.recycle.adapter.OrderItemAdapter
-import com.appliances.recycle.dto.ItemDTO
-import com.google.android.material.datepicker.MaterialDatePicker
+import androidx.core.content.ContentProviderCompat.requireContext
+import com.appliances.recycle.dto.MemberDTO
+import com.appliances.recycle.retrofit.INetworkService
+import com.appliances.recycle.retrofit.MyApplication
+import com.appliances.recycle.viewModel.LoginViewModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.Calendar
 
 class ReservationDetailActivity : AppCompatActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
-//        setContentView(R.layout.activity_reservation_detail)
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.resv)) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-//            insets
-//        }
-//    }
+
+    private lateinit var networkService: INetworkService
+    private lateinit var app_prefs: SharedPreferences
+    private lateinit var my_app_prefs: SharedPreferences
 
     private lateinit var textCollectionDate: TextView
     private lateinit var textMemberName: TextView
@@ -42,10 +42,24 @@ class ReservationDetailActivity : AppCompatActivity() {
     private lateinit var editAddress: EditText
     private lateinit var btnSelectDate: Button
     private lateinit var btnEditInfo: Button
+    private var isEditMode = false
+    private lateinit var addressFinderLauncher: ActivityResultLauncher<Bundle>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reservation_detail)
+
+        val myApplication = applicationContext as MyApplication
+        myApplication.initialize(this)
+        networkService = myApplication.getApiService()
+
+        app_prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        my_app_prefs = getSharedPreferences("my_app_prefs", Context.MODE_PRIVATE)
+
+        // app_prefs에서 저장된 값 가져오기
+        val name = app_prefs.getString("name", "이름 없음")
+        val phone = app_prefs.getString("phone", "전화번호 없음")
+        val address = app_prefs.getString("address", "주소 없음")
 
         // View 초기화
         textCollectionDate = findViewById(R.id.collection_date)
@@ -59,10 +73,9 @@ class ReservationDetailActivity : AppCompatActivity() {
         btnEditInfo = findViewById(R.id.btn_edit_info)
 
         // DB에서 값 가져오기 (여기서는 예제로 하드코딩)
-//        textCollectionDate.text =
-//        textMemberName =
-//        textAddress.text =
-//        textMemberPhone =
+        textMemberName.text = name ?: "이름 없음"
+        textAddress.text = address ?: "주소 없음"
+        textMemberPhone.text = phone ?: "전화번호 없음"
 
         // 예약 예정일 수정 버튼 클릭 이벤트
         btnSelectDate.setOnClickListener {
@@ -95,31 +108,133 @@ class ReservationDetailActivity : AppCompatActivity() {
             datePickerDialog.show()
         }
 
+        editMemberPhone.addTextChangedListener(object : TextWatcher {
+            private var isFormatting: Boolean = false
+            private var prevLength: Int = 0
 
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                prevLength = s?.length ?: 0
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // 아무 동작하지 않음
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (isFormatting) return
+
+                isFormatting = true
+
+                s?.let {
+                    // 숫자만 남기기
+                    val digitsOnly = s.toString().replace(Regex("[^\\d]"), "")
+
+                    // 11자리까지만 허용
+                    if (digitsOnly.length > 11) {
+                        s.delete(11, s.length)
+                        isFormatting = false
+                        return
+                    }
+
+                    // 전화번호 형식으로 포맷 적용
+                    val formattedNumber = formatPhoneNumber(digitsOnly)
+                    s.replace(0, s.length, formattedNumber)
+                }
+
+                isFormatting = false
+            }
+
+            // 전화번호 포맷 적용 (000-0000-0000 형식)
+            private fun formatPhoneNumber(digits: String): String {
+                return when {
+                    digits.length <= 3 -> digits // 3자리 이하일 때는 그대로 출력
+                    digits.length <= 7 -> "${digits.substring(0, 3)}-${digits.substring(3)}" // 000-0000
+                    else -> "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}" // 000-0000-0000
+                }
+            }
+        })
+
+        addressFinderLauncher = registerForActivityResult(AddressFinder.contract) { result ->
+            if (result != Bundle.EMPTY) {
+                // address와 zipcode 값을 받아온 후 처리
+                val address = result.getString(AddressFinder.ADDRESS)
+                val zipCode = result.getString(AddressFinder.ZIPCODE)
+                val editableText: Editable = Editable.Factory.getInstance().newEditable("[$zipCode] $address")
+                // 받은 데이터를 사용해 필요한 작업 수행
+                editAddress.text = editableText
+            }
+        }
 
         // 정보 수정 버튼 클릭 이벤트
         btnEditInfo.setOnClickListener {
-            // TextView 숨기기
-            textMemberName.visibility = View.GONE
-            textAddress.visibility = View.GONE
-            textMemberPhone.visibility = View.GONE
+            if (isEditMode) {
+                textMemberName.text = editMemberName.text
+                textAddress.text = editAddress.text
+                textMemberPhone.text = editMemberPhone.text
 
-            // EditText 보이기
-            editMemberName.visibility = View.VISIBLE
-            editAddress.visibility = View.VISIBLE
-            editMemberPhone.visibility = View.VISIBLE
+                // EditText 숨기기
+                editMemberName.visibility = View.GONE
+                editAddress.visibility = View.GONE
+                editMemberPhone.visibility = View.GONE
 
-            // 기존 TextView의 값을 EditText에 복사
-            editMemberName.setText(textMemberName.text)
-            editAddress.setText(textAddress.text)
-            editMemberPhone.setText(textMemberPhone.text)
+                // TextView 보이기
+                textMemberName.visibility = View.VISIBLE
+                textAddress.visibility = View.VISIBLE
+                textMemberPhone.visibility = View.VISIBLE
 
-//            val itemDTO = loadItemDTOFromDB()
-//
-//            // 멤버 이름, 전화번호, 주소 등을 TextView에 설정
-//            textMemberName.text = itemDTO?.memberName ?: "이름 없음"
-//            textMemberPhone.text = itemDTO?.memberPhone ?: "전화번호 없음"
-//            textAddress.text = itemDTO?.memberAddress ?: "주소 없음"
+                btnEditInfo.text = "수정"
+
+                isEditMode = false
+
+                networkService.getOrders().enqueue(object : Callback<MemberDTO> {
+                    override fun onResponse(call: Call<MemberDTO>, response: Response<MemberDTO>) {
+                        if (response.isSuccessful) {
+                            val member = response.body()
+                            if (member != null) {
+                                Log.d("API", "User Info: ${member.mname}, ${member.address}, ${member.phone}")
+
+                                textMemberName.text = member.mname ?: "이름 없음"
+                                textAddress.text = member.address ?: "주소 없음"
+                                textMemberPhone.text = member.phone ?: "전화번호 없음"
+                            } else {
+                                Log.e("API", "Received empty body")
+                            }
+                        } else {
+                            val errorMessage = response.errorBody()?.string()
+                            Log.e("API", "Failed to retrieve data: $errorMessage")
+                            when (response.code()) {
+                                401 -> Log.e("API", "Unauthorized: 로그인 필요")
+                                404 -> Log.e("API", "User not found")
+                                else -> Log.e("API", "Unexpected error: ${response.code()}")
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<MemberDTO>, t: Throwable) {
+                        Log.e("API", "Network request failed: ${t.message}")
+                    }
+                })
+            } else {
+                editMemberName.setText(textMemberName.text)
+                editAddress.setText(textAddress.text)
+                editMemberPhone.setText(textMemberPhone.text)
+
+                textMemberName.visibility = View.GONE
+                textAddress.visibility = View.GONE
+                textMemberPhone.visibility = View.GONE
+
+                editMemberName.visibility = View.VISIBLE
+                editAddress.visibility = View.VISIBLE
+                editMemberPhone.visibility = View.VISIBLE
+
+                editAddress.setOnClickListener{
+                    addressFinderLauncher.launch(Bundle())
+                }
+
+                btnEditInfo.text = "저장"
+
+                isEditMode = true
+            }
         }
 
     }

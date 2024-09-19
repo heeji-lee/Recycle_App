@@ -43,6 +43,15 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <activity
+            android:name=".AddressFinder"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.addressfinder.FINDER" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".NoticeDetailActivity"
             android:exported="true" />
         <activity

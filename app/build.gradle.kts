@@ -115,6 +115,10 @@ dependencies {
     // webkit, 다음 주소 웹 뷰 사용하기.
     implementation("androidx.webkit:webkit:1.8.0")
 
+    //결제, 포트원, 샘플
+    implementation ("com.github.iamport:iamport-android:1.4.5")
+    implementation ("com.github.iamport:iamport-android:fix~custom_data-SNAPSHOT")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

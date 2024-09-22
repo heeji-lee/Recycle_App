@@ -1,9 +1,7 @@
 package com.appliances.recycle
 
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
@@ -12,20 +10,26 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.appliances.recycle.adapter.OrderItemAdapter
+import com.appliances.recycle.dto.ItemDTO
 import com.appliances.recycle.dto.MemberDTO
 import com.appliances.recycle.retrofit.INetworkService
 import com.appliances.recycle.retrofit.MyApplication
-import com.appliances.recycle.viewModel.LoginViewModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.Calendar
+import java.text.NumberFormat
+import java.util.Locale
 
 class ReservationDetailActivity : AppCompatActivity() {
 
@@ -33,22 +37,41 @@ class ReservationDetailActivity : AppCompatActivity() {
     private lateinit var app_prefs: SharedPreferences
     private lateinit var my_app_prefs: SharedPreferences
 
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var orderItemAdapter: OrderItemAdapter
     private lateinit var textCollectionDate: TextView
+    private lateinit var btnSelectDate: Button
     private lateinit var textMemberName: TextView
     private lateinit var textMemberPhone: TextView
     private lateinit var textAddress: TextView
     private lateinit var editMemberName: EditText
     private lateinit var editMemberPhone: EditText
     private lateinit var editAddress: EditText
-    private lateinit var btnSelectDate: Button
-    private lateinit var btnEditInfo: Button
-    private lateinit var btnSubmit: Button
-    private var isEditMode = false
     private lateinit var addressFinderLauncher: ActivityResultLauncher<Bundle>
+    private var isEditMode = false
+    private lateinit var btnEditInfo: Button
+    private lateinit var cardButton: LinearLayout
+    private lateinit var bankTransferButton: LinearLayout
+    private lateinit var mobilePaymentButton: LinearLayout
+    private lateinit var kakaoPayButton: LinearLayout
+    private lateinit var naverPayButton: LinearLayout
+    private lateinit var btnSubmit: Button
+
+    private var totalAmount: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reservation_detail)
+
+        // RecyclerView 초기화
+        recyclerView = findViewById(R.id.recycler_view2)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // 어댑터 초기화 및 SharedPreferences에서 데이터 불러오기
+        val initialItems = loadItemsFromSharedPrefs()
+        orderItemAdapter = OrderItemAdapter(initialItems.toMutableList(), context = this)
+
+        recyclerView.adapter = orderItemAdapter
 
         val myApplication = applicationContext as MyApplication
         myApplication.initialize(this)
@@ -72,7 +95,15 @@ class ReservationDetailActivity : AppCompatActivity() {
         editAddress = findViewById(R.id.edit_address)
         btnSelectDate = findViewById(R.id.btn_select_date)
         btnEditInfo = findViewById(R.id.btn_edit_info)
+
+        cardButton = findViewById(R.id.Card)
+        bankTransferButton = findViewById(R.id.BankTransfer)
+        mobilePaymentButton = findViewById(R.id.MobilePayment)
+        kakaoPayButton = findViewById(R.id.KakaoPay)
+        naverPayButton = findViewById(R.id.NaverPay)
         btnSubmit = findViewById(R.id.btn_submit)
+
+        updateTotalAmount()
 
         // DB에서 값 가져오기 (여기서는 예제로 하드코딩)
         textMemberName.text = name ?: "이름 없음"
@@ -161,7 +192,8 @@ class ReservationDetailActivity : AppCompatActivity() {
                 // address와 zipcode 값을 받아온 후 처리
                 val address = result.getString(AddressFinder.ADDRESS)
                 val zipCode = result.getString(AddressFinder.ZIPCODE)
-                val editableText: Editable = Editable.Factory.getInstance().newEditable("[$zipCode] $address")
+//                val editableText: Editable = Editable.Factory.getInstance().newEditable("[$zipCode] $address")
+                val editableText: Editable = Editable.Factory.getInstance().newEditable("$address")
                 // 받은 데이터를 사용해 필요한 작업 수행
                 editAddress.text = editableText
             }
@@ -239,11 +271,85 @@ class ReservationDetailActivity : AppCompatActivity() {
             }
         }
 
-        btnSubmit.setOnClickListener {
-            val intent = Intent(this, PayActivity::class.java)
-            startActivity(intent)
+        // 카드 버튼 클릭 리스너
+        cardButton.setOnClickListener {
+            // 카드 결제 클릭 시 처리할 작업
+            Toast.makeText(this, "카드 결제가 선택되었습니다.", Toast.LENGTH_SHORT).show()
+            // 여기서 카드 결제 페이지로 이동하는 코드 등을 추가할 수 있습니다.
         }
 
+        // 무통장입금 버튼 클릭 리스너
+        bankTransferButton.setOnClickListener {
+            // 무통장입금 클릭 시 처리할 작업
+            Toast.makeText(this, "무통장입금이 선택되었습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+        // 핸드폰 결제 버튼 클릭 리스너
+        mobilePaymentButton.setOnClickListener {
+            // 핸드폰 결제 클릭 시 처리할 작업
+            Toast.makeText(this, "핸드폰 결제가 선택되었습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+        // 카카오페이 버튼 클릭 리스너
+        kakaoPayButton.setOnClickListener {
+            // 카카오페이 클릭 시 처리할 작업
+            Toast.makeText(this, "카카오페이가 선택되었습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+        // 네이버페이 버튼 클릭 리스너
+        naverPayButton.setOnClickListener {
+            // 네이버페이 클릭 시 처리할 작업
+            Toast.makeText(this, "네이버페이가 선택되었습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+        btnSubmit.setOnClickListener {
+//            val intent = Intent(this, PayActivity::class.java)
+//            startActivity(intent)
+        }
+
+    }
+
+    // SharedPreferences에서 데이터를 불러오는 함수
+    private fun loadItemsFromSharedPrefs(): List<ItemDTO> {
+        val sharedPrefs = getSharedPreferences("my_app_prefs", MODE_PRIVATE)
+        val jsonString = sharedPrefs.getString("items_key", null)
+        return if (jsonString != null) {
+            val type = object : com.google.gson.reflect.TypeToken<List<ItemDTO>>() {}.type
+            com.google.gson.Gson().fromJson(jsonString, type)
+        } else {
+            listOf() // 데이터가 없으면 빈 리스트 반환
+        }
+    }
+
+    fun calculateTotalAmount(): Int {
+        // SharedPreferences에서 JSON 문자열을 불러오기
+        val sharedPrefs = getSharedPreferences("my_app_prefs", MODE_PRIVATE)
+        val jsonString = sharedPrefs.getString("items_key", null)
+
+        return if (jsonString != null) {
+            val type = object : TypeToken<List<ItemDTO>>() {}.type
+            val itemList: List<ItemDTO> = Gson().fromJson(jsonString, type)
+
+            // 모든 아이템의 iprice 값을 더함
+            var totalAmount = 0
+            for (item in itemList) {
+                totalAmount += item.iprice.toInt() ?: 0 // iprice 값이 없으면 0 처리
+            }
+            totalAmount
+        } else {
+            0 // SharedPreferences에 데이터가 없을 경우 0 반환
+        }
+    }
+
+    private fun updateTotalAmount() {
+        val totalAmount = calculateTotalAmount()
+        val formattedAmount = formatCurrency(totalAmount)
+        btnSubmit.text = "${formattedAmount}원 결제"
+    }
+
+    fun formatCurrency(amount: Int): String {
+        val numberFormat = NumberFormat.getInstance(Locale.KOREA) // 한국 형식으로 포맷팅
+        return numberFormat.format(amount)
     }
 
 }
